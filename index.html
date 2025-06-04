@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="css/style.css">
+    <script src="js/youtube.js" charset="utf-8"></script>
+    <link rel="icon" type="image/png" href="img/favicon.png" />
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <title>YT Radio Mode</title>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src=""></script>
+    <script>
+      const live = window.location.toString().indexOf('andymagnom.github.io') !== -1;
+      if (live) {
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'UA-131587593-6');
+      }
+    </script>
+  </head>
+  <body>
+    <div class="settings-bar">
+      <div class="language-switch">
+        <button class="lang-btn active" data-lang="en">EN</button>
+        <button class="lang-btn" data-lang="ar">عربي</button>
+      </div>
+      <div class="theme-switch">
+        <button class="theme-btn" data-theme="dark">
+          <span class="material-icons">dark_mode</span>
+        </button>
+        <button class="theme-btn" data-theme="light">
+          <span class="material-icons">light_mode</span>
+        </button>
+      </div>
+    </div>
+    <div id="player"></div>
+    <div class="player-container">
+      <div class="thumbnail"></div>
+      <div class="player-content">
+        <div class="title">&nbsp;</div>
+        <div class="progress-container">
+          <div class="progress-bar">
+            <div class="progress"></div>
+          </div>
+          <div class="time-info">
+            <span class="current-time">0:00</span>
+            <span class="duration">0:00</span>
+          </div>
+        </div>
+        <div class="controls">
+          <div class="control-button loop-button" title="Loop">
+            <span class="material-icons">repeat</span>
+          </div>
+          <div class="control-button restart button" title="Previous">
+            <span class="material-icons">skip_previous</span>
+          </div>
+          <div class="control-button play button pause" title="Play/Pause">
+            <span class="material-icons">play_arrow</span>
+          </div>
+          <div class="control-button next-button" title="Next">
+            <span class="material-icons">skip_next</span>
+          </div>
+          <div class="volume-container">
+            <span class="material-icons volume-icon">volume_up</span>
+            <input type="range" class="volume-slider" min="0" max="100" value="100">
+          </div>
+        </div>
+      </div>
+      <div class="hidden error-notice" data-i18n="error-message">There is an issue loading this video. Please try again later.</div>
+      <div class="hidden welcome">
+        <p data-i18n="welcome-1">To use <b>YT Radio Mode</b> as it was designed, install the <a href="https://gist.github.com/dotspencer/9d7eebe3a2140dbeace9d3ece5671bf1/raw/">Userscript</a>.</p>
+        <p data-i18n="welcome-2">Then search for a song on Google and click the YouTube link.</p>
+        <p>------</p>
+        <p data-i18n="welcome-3">Or just try out some songs below:</p>
+        <p><a href="https://andymagnom.github.io/?id=8GW6sLrK40k">HOME - Resonance</a></p>
+        <p><a href="https://andymagnom.github.io/?id=wtq6FnM3c8U">Nicopatty - Nico's Nextbots OST</a></p>
+        <p><a href="https://andymagnom.github.io/music-mode/?id=BbKAObQ0sao">Hatsune Miku - Triple Baka</a></p>
+        <p><a href="https://andymagnom.github.io/music-mode/?id=rXLS7boKQxM">𝘙𝘢𝘺𝘥 - ريمكس دمتي امي</a></p>
+        <p><a href="https://andymagnom.github.io/music-mode/?id=svEtOP-s7H4">Birmo Salva - حكاية أبطال - اغنية فلسطين</a></p>
+      </div>
+    </div>
+    <footer>
+      <script src="js/main.js" charset="utf-8"></script>
+    </footer>
+  </body>
+</html>
