@@ -14,9 +14,9 @@ A modern, minimal YouTube music player with a beautiful interface and additional
 
 ## Usage
 
-1. Visit the [live demo](https://[your-username].github.io/yt-radio-mode)
+1. Visit the [live demo](https://andymagnom.github.io/yt-radio-mode)
 2. Add a YouTube video ID to the URL: `?id=VIDEO_ID`
-   - Example: `https://[your-username].github.io/yt-radio-mode/?id=dQw4w9WgXcQ`
+   - Example: `https://andymagnom.github.io/yt-radio-mode/?id=dQw4w9WgXcQ`
 
 ## Development
 
