@@ -1,87 +1,139 @@
 <!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <link rel="stylesheet" href="css/style.css">
-    <script src="js/youtube.js" charset="utf-8"></script>
-    <link rel="icon" type="image/png" href="img/favicon.png" />
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <title>YT Radio Mode</title>
-    <!-- Global site tag (gtag.js) - Google Analytics -->
-    <script async src=""></script>
-    <script>
-      const live = window.location.toString().indexOf('andymagnom.github.io') !== -1;
-      if (live) {
-        window.dataLayer = window.dataLayer || [];
-        function gtag(){dataLayer.push(arguments);}
-        gtag('js', new Date());
-        gtag('config', 'UA-131587593-6');
-      }
-    </script>
-  </head>
-  <body>
-    <div class="settings-bar">
-      <div class="language-switch">
-        <button class="lang-btn active" data-lang="en">EN</button>
-        <button class="lang-btn" data-lang="ar">عربي</button>
-      </div>
-      <div class="theme-switch">
-        <button class="theme-btn" data-theme="dark">
-          <span class="material-icons">dark_mode</span>
-        </button>
-        <button class="theme-btn" data-theme="light">
-          <span class="material-icons">light_mode</span>
-        </button>
-      </div>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>YT Radio Mode</title>
+  <link id="app-favicon" rel="icon" type="image/png" href="img/favicon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Material+Icons&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app-branding">
+    <img id="app-logo" src="img/logo.png" alt="YT Radio Logo" class="app-logo">
+  </div>
+
+  <header class="settings-bar">
+    <button id="toggle-lang" class="btn-pill" aria-label="Switch Language">AR</button>
+    <button id="toggle-notice" class="btn-circle" aria-label="Show Notice">
+      <span class="material-icons">help_outline</span>
+    </button>
+    <button id="toggle-theme" class="btn-circle" aria-label="Toggle Theme">
+      <span id="icon-theme" class="material-icons">light_mode</span>
+    </button>
+  </header>
+
+  <main class="app-layout">
+    <div class="sr-only">
+      <div id="yt-hidden-player"></div>
     </div>
-    <div id="player"></div>
-    <div class="player-container">
-      <div class="thumbnail"></div>
-      <div class="player-content">
-        <div class="title">&nbsp;</div>
-        <div class="progress-container">
-          <div class="progress-bar">
-            <div class="progress"></div>
+
+    <section class="main-column">
+      <article class="player-card">
+        <div id="player-thumbnail" class="player-thumbnail" role="img" aria-label="Cover art"></div>
+        
+        <div class="player-metadata marquee-box">
+          <div id="player-title" class="player-title">No track playing</div>
+        </div>
+
+        <div class="player-progress">
+          <div id="progress-timeline" class="progress-timeline" role="slider" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+            <div id="progress-fill" class="progress-fill"></div>
           </div>
-          <div class="time-info">
-            <span class="current-time">0:00</span>
-            <span class="duration">0:00</span>
+          <div class="time-metrics">
+            <time id="time-current">0:00</time>
+            <time id="time-total">0:00</time>
           </div>
         </div>
-        <div class="controls">
-          <div class="control-button loop-button" title="Loop">
-            <span class="material-icons">repeat</span>
-          </div>
-          <div class="control-button restart button" title="Previous">
+
+        <div class="player-controls">
+          <button id="ctrl-loop" class="btn-icon" title="Toggle Loop Mode (Shift+L)">
+            <span id="icon-loop" class="material-icons">repeat</span>
+          </button>
+          <button id="ctrl-restart" class="btn-icon" title="Previous Track (Shift+P)">
             <span class="material-icons">skip_previous</span>
-          </div>
-          <div class="control-button play button pause" title="Play/Pause">
-            <span class="material-icons">play_arrow</span>
-          </div>
-          <div class="control-button next-button" title="Next">
+          </button>
+          <button id="ctrl-play" class="btn-icon btn-play" title="Play/Pause (K / Space)">
+            <span id="icon-play-state" class="material-icons">play_arrow</span>
+          </button>
+          <button id="ctrl-next" class="btn-icon" title="Next Track (Shift+N)">
             <span class="material-icons">skip_next</span>
+          </button>
+          <button id="ctrl-autoplay" class="btn-icon active" title="Toggle Autoplay (A)">
+            <span class="material-icons">play_circle_filled</span>
+          </button>
+          
+          <div class="hover-flyout-container">
+            <button id="ctrl-speed" class="btn-icon-small" title="Playback Speed (< / >)">
+              <span class="material-icons">speed</span>
+              <span id="label-speed" class="badge-speed">1x</span>
+            </button>
+            <div class="flyout-slider">
+              <input type="range" id="slider-speed" min="0.25" max="4" step="0.25" value="1">
+            </div>
           </div>
-          <div class="volume-container">
-            <span class="material-icons volume-icon">volume_up</span>
-            <input type="range" class="volume-slider" min="0" max="100" value="100">
+
+          <div class="hover-flyout-container">
+            <button id="ctrl-mute" class="btn-icon-small" title="Mute/Unmute (M)">
+              <span id="icon-volume" class="material-icons">volume_up</span>
+            </button>
+            <div class="flyout-slider">
+              <input type="range" id="slider-volume" min="0" max="100" value="100">
+            </div>
           </div>
         </div>
+
+        <div id="panel-welcome" class="dashboard-welcome lang-target">
+          <p data-i18n="welc_1">To use <b>YT Radio Mode</b> seamlessly, Install the <a href="https://gist.github.com/dotspencer/9d7eebe3a2140dbeace9d3ece5671bf1/raw/">Userscript</a>.</p>
+          <button id="btn-load-demo" class="btn-primary" data-i18n="btn_demo">⚡ Play Sample Songs</button>
+        </div>
+      </article>
+
+      <aside id="playback-notice" class="playback-notice-box lang-target">
+        <button id="btn-close-notice" class="btn-close-notice" aria-label="Dismiss Notice">
+          <span class="material-icons">close</span>
+        </button>
+        <div class="notice-headline">
+          <span class="material-icons">info_outline</span>
+          <h3 data-i18n="notice_head">Why do some videos fail?</h3>
+        </div>
+        <p data-i18n="notice_body">YouTube blocks embedding/playback on external domains for specific music videos, regional licenses, or content explicitly marked age-restricted. If a video refuses to load or errors out, it is caused directly by these API system restrictions.</p>
+      </aside>
+    </section>
+
+    <section class="side-column">
+      <div class="manager-card">
+        <div class="search-box">
+          <input type="text" id="input-search" placeholder="Paste YouTube link here..." data-i18n-holder="search_place">
+          <button id="btn-search" class="btn-search-trigger"><span class="material-icons">add</span></button>
+        </div>
+
+        <div class="queue-header">
+          <h2 id="queue-title-text" class="lang-target" data-i18n="queue_title">Play Queue</h2>
+          <button id="btn-clear-queue" class="btn-text-action lang-target" data-i18n="clear">Clear All</button>
+        </div>
+
+        <div id="queue-list" class="queue-list"></div>
       </div>
-      <div class="hidden error-notice" data-i18n="error-message">There is an issue loading this video. Please try again later.</div>
-      <div class="hidden welcome">
-        <p data-i18n="welcome-1">To use <b>YT Radio Mode</b> as it was designed, install the <a href="https://gist.github.com/dotspencer/9d7eebe3a2140dbeace9d3ece5671bf1/raw/">Userscript</a>.</p>
-        <p data-i18n="welcome-2">Then search for a song on Google and click the YouTube link.</p>
-        <p>------</p>
-        <p data-i18n="welcome-3">Or just try out some songs below:</p>
-        <p><a href="https://andymagnom.github.io/?id=8GW6sLrK40k">HOME - Resonance</a></p>
-        <p><a href="https://andymagnom.github.io/?id=wtq6FnM3c8U">Nicopatty - Nico's Nextbots OST</a></p>
-        <p><a href="https://andymagnom.github.io/music-mode/?id=BbKAObQ0sao">Hatsune Miku - Triple Baka</a></p>
-        <p><a href="https://andymagnom.github.io/music-mode/?id=rXLS7boKQxM">𝘙𝘢𝘺𝘥 - ريمكس دمتي امي</a></p>
-        <p><a href="https://andymagnom.github.io/music-mode/?id=svEtOP-s7H4">Birmo Salva - حكاية أبطال - اغنية فلسطين</a></p>
-      </div>
+    </section>
+  </main>
+
+  <div id="notice-error" class="error-toast hidden" role="alert">
+    <span class="material-icons">error_outline</span>
+    <span data-i18n="err_load">There is an issue loading this video. Skipping...</span>
+  </div>
+
+  <div id="notice-resume" class="resume-toast hidden lang-target" role="dialog">
+    <span class="material-icons">restore</span>
+    <span data-i18n="resume_text">Resume from where you left off?</span>
+    <div class="resume-actions">
+      <button id="btn-resume-yes" class="btn-pill" data-i18n="resume_yes">Continue</button>
+      <button id="btn-resume-no" class="btn-pill" data-i18n="resume_no">Start Over</button>
     </div>
-    <footer>
-      <script src="js/main.js" charset="utf-8"></script>
-    </footer>
-  </body>
+  </div>
+
+  <script src="main.js" type="module"></script>
+</body>
 </html>
