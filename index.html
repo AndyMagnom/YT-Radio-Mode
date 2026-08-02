@@ -17,6 +17,9 @@
 
   <header class="settings-bar">
     <button id="toggle-lang" class="btn-pill" aria-label="Switch Language">AR</button>
+    <button id="toggle-iv-settings" class="btn-circle" aria-label="Invidious Settings" title="Invidious fallback player settings">
+      <span class="material-icons">swap_horiz</span>
+    </button>
     <button id="toggle-notice" class="btn-circle" aria-label="Show Notice">
       <span class="material-icons">help_outline</span>
     </button>
@@ -24,6 +27,13 @@
       <span id="icon-theme" class="material-icons">light_mode</span>
     </button>
   </header>
+
+  <div id="panel-iv-settings" class="iv-settings-panel hidden lang-target">
+    <label for="input-iv-instance" data-i18n="iv_label">Invidious instance URL</label>
+    <input type="text" id="input-iv-instance" placeholder="https://yewtu.be">
+    <button id="btn-iv-save" class="btn-pill" data-i18n="iv_save">Save</button>
+    <p class="iv-note" data-i18n="iv_note">Public instances change often — if playback fails, try a different one.</p>
+  </div>
 
   <main class="app-layout">
     <div class="sr-only">
@@ -33,6 +43,15 @@
     <section class="main-column">
       <article class="player-card">
         <div id="player-thumbnail" class="player-thumbnail" role="img" aria-label="Cover art"></div>
+
+        <div id="invidious-player-wrap" class="invidious-wrap hidden">
+          <iframe id="invidious-frame" class="invidious-frame" allow="autoplay; encrypted-media" allowfullscreen title="Invidious player"></iframe>
+          <div class="invidious-toolbar lang-target">
+            <span class="material-icons">swap_horiz</span>
+            <span data-i18n="iv_playing">Playing via Invidious</span>
+            <button id="btn-iv-back" class="btn-text-action" data-i18n="iv_back">Back to YouTube player</button>
+          </div>
+        </div>
         
         <div class="player-metadata marquee-box">
           <div id="player-title" class="player-title">No track playing</div>
@@ -122,7 +141,8 @@
 
   <div id="notice-error" class="error-toast hidden" role="alert">
     <span class="material-icons">error_outline</span>
-    <span data-i18n="err_load">There is an issue loading this video. Skipping...</span>
+    <span id="error-toast-text" data-i18n="err_load">There is an issue loading this video. Skipping...</span>
+    <button id="btn-error-invidious" class="btn-pill" data-i18n="err_try_invidious">Try Invidious</button>
   </div>
 
   <div id="notice-resume" class="resume-toast hidden lang-target" role="dialog">

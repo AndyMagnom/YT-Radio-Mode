@@ -1,6 +1,15 @@
 const CONFIG = {
   liveDomain: 'andymagnom.github.io',
   defaultThumb: 'https://img.youtube.com/vi/{id}/hqdefault.jpg',
+  // Public Invidious instances used as a fallback player for videos YouTube
+  // blocks from embedding/playing. These come and go, so the app also lets
+  // the user type a custom instance in the settings panel.
+  invidiousInstances: [
+    'https://yewtu.be',
+    'https://invidious.nerdvpn.de',
+    'https://inv.nadeko.net',
+    'https://iv.ggtyler.dev'
+  ],
   demoTracks: [
     { id: '8GW6sLrK40k', title: 'HOME - Resonance' },
     { id: 'wtq6FnM3c8U', title: "Nicopatty - Nico's Nextbots OST" },
@@ -13,7 +22,14 @@ const CONFIG = {
 const TRANSLATIONS = {
   en: {
     err_load: "Playback issue. This video might have restrictions. Skipping...",
+    err_restricted: "YouTube blocks this video here. Try the Invidious fallback player.",
+    err_try_invidious: "Try Invidious",
     err_invalid: "Invalid YouTube link or ID.",
+    iv_playing: "Playing via Invidious",
+    iv_back: "Back to YouTube player",
+    iv_label: "Invidious instance URL",
+    iv_save: "Save",
+    iv_note: "Public instances change often — if playback fails, try a different one.",
     welc_1: "To use <b>YT Radio Mode</b> seamlessly, install the <a href='https://gist.github.com/dotspencer/9d7eebe3a2140dbeace9d3ece5671bf1/raw/'>Userscript</a>.",
     btn_demo: "⚡ Play Sample Songs",
     queue_title: "Play Queue",
@@ -27,7 +43,14 @@ const TRANSLATIONS = {
   },
   ar: {
     err_load: "مشكلة في التشغيل. قد يحتوي هذا الفيديو على قيود. يتم التخطي...",
+    err_restricted: "يوتيوب يمنع تشغيل هذا الفيديو هنا. جرّب مشغّل Invidious البديل.",
+    err_try_invidious: "جرّب Invidious",
     err_invalid: "رابط أو معرف يوتيوب غير صالح.",
+    iv_playing: "التشغيل عبر Invidious",
+    iv_back: "الرجوع لمشغّل يوتيوب",
+    iv_label: "رابط سيرفر Invidious",
+    iv_save: "حفظ",
+    iv_note: "السيرفرات العامة تتغير كثيرًا — إذا فشل التشغيل، جرّب سيرفر آخر.",
     welc_1: "لإستخدام <b>وضع راديو يوتيوب</b> بسلاسة، قم بتثبيت هذا <a href='https://gist.github.com/dotspencer/9d7eebe3a2140dbeace9d3ece5671bf1/raw/'>السكربت</a>.",
     btn_demo: "⚡ تشغيل الأغاني التجريبية",
     queue_title: "قائمة التشغيل",
@@ -60,6 +83,8 @@ const App = {
   errorTimer: null,
   lastSavedSec: 0,
   pendingResumeTime: 0,
+  invidiousInstance: '',
+  activePlaybackMode: 'youtube', // 'youtube' | 'invidious'
 
   init() {
     this.loadSettings();
@@ -189,6 +214,11 @@ const App = {
       if (autoPlayBtn) autoPlayBtn.classList.toggle('active', this.autoPlay);
     }
 
+    const savedInstance = localStorage.getItem('ytrm_invidious_instance');
+    this.invidiousInstance = (savedInstance && savedInstance.trim()) || CONFIG.invidiousInstances[0];
+    const ivInput = document.getElementById('input-iv-instance');
+    if (ivInput) ivInput.value = this.invidiousInstance;
+
     const savedSpeed = parseFloat(localStorage.getItem('ytrm_speed'));
     if (!isNaN(savedSpeed)) {
       this.currentSpeed = savedSpeed;
@@ -242,28 +272,9 @@ const App = {
       events: {
         'onReady': () => this.onPlayerReady(),
         'onStateChange': (e) => this.onPlayerStateChange(e),
-        'onError': () => this.onPlayerError()
+        'onError': (e) => this.onPlayerError(e)
       }
     });
-  },
-
-  onPlayerReady() {
-    const defaultVol = this.isMuted ? 0 : this.savedVolume;
-    if (this.player.setVolume) this.player.setVolume(defaultVol);
-    
-    if (this.queue.length > 0 && this.currentIndex !== -1) {
-      document.getElementById('panel-welcome').classList.add('hidden');
-      this.setPlayerTitle(this.queue[this.currentIndex].title);
-      document.getElementById('player-thumbnail').style.backgroundImage = `url('${CONFIG.defaultThumb.replace('{id}', this.queue[this.currentIndex].id)}')`;
-
-      if (this.pendingResumeTime > 0) {
-        document.getElementById('notice-resume').classList.remove('hidden');
-      } else {
-        this.playAtIndex(this.currentIndex);
-      }
-    } else if (this.queue.length > 0) {
-      this.playAtIndex(0);
-    }
   },
 
   onPlayerStateChange(event) {
@@ -327,6 +338,90 @@ const App = {
     }
   },
 
+  onPlayerError(event) {
+    // YT error codes: 2 bad param, 5 HTML5 player, 100 not found,
+    // 101/150 embedding disallowed by the video owner.
+    const code = event && event.data;
+    const item = this.queue[this.currentIndex];
+    if (item) item.isErrored = true;
+    this.renderQueue();
+
+    this.isPlaying = false;
+    const playIcon = document.getElementById('icon-play-state');
+    if (playIcon) playIcon.textContent = 'play_arrow';
+    clearInterval(this.updateLoop);
+
+    const isRestricted = (code === 101 || code === 150 || code === 100);
+    const toast = document.getElementById('notice-error');
+    const textEl = document.getElementById('error-toast-text');
+    if (textEl) textEl.innerHTML = TRANSLATIONS[this.currentLanguage][isRestricted ? 'err_restricted' : 'err_load'];
+    if (toast) toast.classList.remove('hidden');
+
+    const ivBtn = document.getElementById('btn-error-invidious');
+    if (ivBtn) {
+      ivBtn.style.display = isRestricted ? '' : 'none';
+      ivBtn.onclick = () => {
+        clearTimeout(this.errorTimer);
+        if (toast) toast.classList.add('hidden');
+        this.playViaInvidious(this.currentIndex);
+      };
+    }
+
+    clearTimeout(this.errorTimer);
+    this.errorTimer = setTimeout(() => {
+      if (toast) toast.classList.add('hidden');
+      if (this.autoPlay) this.next();
+    }, 6000);
+  },
+
+  getInvidiousInstance() {
+    return this.invidiousInstance || CONFIG.invidiousInstances[0];
+  },
+
+  setInvidiousInstance(url) {
+    const clean = (url || '').trim().replace(/\/+$/, '');
+    if (!clean) return;
+    this.invidiousInstance = clean;
+    localStorage.setItem('ytrm_invidious_instance', clean);
+  },
+
+  playViaInvidious(index) {
+    if (index < 0 || index >= this.queue.length) return;
+    const item = this.queue[index];
+
+    this.currentIndex = index;
+    this.saveQueueState();
+    this.renderQueue();
+
+    // Stop the hidden YouTube player so it doesn't play alongside Invidious.
+    if (this.player && this.player.stopVideo) {
+      try { this.player.stopVideo(); } catch (e) {}
+    }
+    clearInterval(this.updateLoop);
+    clearTimeout(this.errorTimer);
+
+    document.getElementById('notice-error').classList.add('hidden');
+    document.getElementById('notice-resume').classList.add('hidden');
+    document.getElementById('panel-welcome').classList.add('hidden');
+
+    this.activePlaybackMode = 'invidious';
+    const base = this.getInvidiousInstance();
+    const frame = document.getElementById('invidious-frame');
+    if (frame) frame.src = `${base}/embed/${item.id}?autoplay=1`;
+
+    document.getElementById('invidious-player-wrap').classList.remove('hidden');
+    document.getElementById('player-thumbnail').style.backgroundImage = `url('${CONFIG.defaultThumb.replace('{id}', item.id)}')`;
+    this.setPlayerTitle(item.title);
+  },
+
+  stopInvidious() {
+    if (this.activePlaybackMode !== 'invidious') return;
+    this.activePlaybackMode = 'youtube';
+    const frame = document.getElementById('invidious-frame');
+    if (frame) frame.src = 'about:blank';
+    document.getElementById('invidious-player-wrap').classList.add('hidden');
+  },
+
   addToQueue(id, title = "Loading Track...") {
     if (!id) return;
     if (this.queue.some(item => item.id === id)) return;
@@ -363,6 +458,7 @@ const App = {
     if (index < 0 || index >= this.queue.length) return;
     if (this.queue[index].isErrored) return;
 
+    this.stopInvidious();
     document.getElementById('notice-resume').classList.add('hidden');
 
     this.currentIndex = index;
@@ -429,6 +525,9 @@ const App = {
             <div class="qi-title">${item.title}</div>
           </div>
         </div>
+        <button class="btn-link btn-invidious" title="Play via Invidious (works around YouTube restrictions)" data-index="${index}">
+          <span class="material-icons">swap_horiz</span>
+        </button>
         <button class="btn-link" title="Open original video" data-id="${item.id}">
           <span class="material-icons">open_in_new</span>
         </button>
@@ -440,7 +539,12 @@ const App = {
         this.playAtIndex(index);
       });
 
-      row.querySelector('.btn-link').addEventListener('click', (e) => {
+      row.querySelector('.btn-invidious').addEventListener('click', (e) => {
+        e.stopPropagation();
+        this.playViaInvidious(index);
+      });
+
+      row.querySelector('[data-id]').addEventListener('click', (e) => {
         e.stopPropagation();
         window.open(`https://www.youtube.com/watch?v=${e.currentTarget.getAttribute('data-id')}`, '_blank');
       });
@@ -490,6 +594,7 @@ const App = {
     if (this.currentIndex === index) {
       if (this.queue.length === 0) {
         this.currentIndex = -1;
+        this.stopInvidious();
         if (this.player) this.player.stopVideo();
         this.setPlayerTitle('No track playing');
         document.getElementById('player-thumbnail').style.backgroundImage = 'none';
@@ -683,6 +788,7 @@ const App = {
       this.saveQueueState();
       localStorage.removeItem('ytrm_currentTime');
       
+      this.stopInvidious();
       if (this.player) this.player.stopVideo();
       this.setPlayerTitle('No track playing');
       document.getElementById('player-thumbnail').style.backgroundImage = 'none';
@@ -720,6 +826,20 @@ const App = {
     document.getElementById('toggle-theme').addEventListener('click', () => {
       const targetTheme = this.currentTheme === 'dark' ? 'light' : 'dark';
       this.setTheme(targetTheme);
+    });
+
+    document.getElementById('toggle-iv-settings').addEventListener('click', () => {
+      document.getElementById('panel-iv-settings').classList.toggle('hidden');
+    });
+
+    document.getElementById('btn-iv-save').addEventListener('click', () => {
+      this.setInvidiousInstance(document.getElementById('input-iv-instance').value);
+      document.getElementById('panel-iv-settings').classList.add('hidden');
+    });
+
+    document.getElementById('btn-iv-back').addEventListener('click', () => {
+      this.stopInvidious();
+      this.playAtIndex(this.currentIndex);
     });
 
     const triggerSearch = () => {

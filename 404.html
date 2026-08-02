@@ -4,13 +4,19 @@
     <meta charset="utf-8">
     <title>YT Radio Router</title>
     <script type="text/javascript">
+        // GitHub Pages project sites live at /<repo-name>/... — a 404 redirect
+        // to "/" drops that prefix and lands on the wrong place (or a 404).
+        // Rebuild the base path from the first URL segment so it works both
+        // as a project page (github.io/repo/) and, harmlessly, at domain root.
         var path = window.location.pathname;
         var search = window.location.search;
-        
+        var segments = path.split('/').filter(Boolean);
+        var base = segments.length > 0 ? '/' + segments[0] + '/' : '/';
+
         window.location.replace(
-            window.location.protocol + '//' + window.location.hostname + 
-            (window.location.port ? ':' + window.location.port : '') + 
-            '/?redir_path=' + encodeURIComponent(path) + '&redir_search=' + encodeURIComponent(search)
+            window.location.origin + base +
+            '?redir_path=' + encodeURIComponent(path) +
+            '&redir_search=' + encodeURIComponent(search)
         );
     </script>
 </head>
