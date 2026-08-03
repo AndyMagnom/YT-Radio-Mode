@@ -1,7 +1,4 @@
 # 📻 YT Radio Mode
-
-> A lightweight, static YouTube "Radio Mode" web player with automatic alt-server fallback, keyboard controls, and full i18n support.
-
 [![GreasyFork Userscript](https://img.shields.io/badge/GreasyFork-YT_Radio_Mode_Redirect-880000?style=for-the-badge&logo=greasyfork)](https://greasyfork.org/en/scripts/589754-yt-radio-mode-redirect)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg?style=for-the-badge)](LICENSE)
 [![Stack](https://img.shields.io/badge/Stack-HTML_%7C_CSS_%7C_JS-yellow?style=for-the-badge)](https://developer.mozilla.org/)
