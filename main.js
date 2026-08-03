@@ -1,15 +1,29 @@
 const CONFIG = {
   liveDomain: 'andymagnom.github.io',
   defaultThumb: 'https://img.youtube.com/vi/{id}/hqdefault.jpg',
-  // Public Invidious instances used as a fallback player for videos YouTube
-  // blocks from embedding/playing. These come and go, so the app also lets
-  // the user type a custom instance in the settings panel.
-  invidiousInstances: [
-    'https://yewtu.be',
-    'https://invidious.nerdvpn.de',
-    'https://inv.nadeko.net',
-    'https://iv.ggtyler.dev'
+  proxyTiers: [
+    {
+      type: 'piped',
+      instances: [
+        'https://pipedapi.kavin.rocks',
+        'https://pipedapi-libre.kavin.rocks',
+        'https://pipedapi.adminforge.de',
+        'https://api.piped.yt',
+        'https://pipedapi.r4fo.com',
+        'https://pipedapi.owo.si',
+      ],
+    },
+    {
+      type: 'invidious',
+      instances: [
+        'https://inv.nadeko.net',
+        'https://invidious.nerdvpn.de',
+        'https://invidious.f5.si',
+        'https://invidious.tiekoetter.com',
+      ],
+    },
   ],
+  maxPlaylistTracks: 300,
   demoTracks: [
     { id: '8GW6sLrK40k', title: 'HOME - Resonance' },
     { id: 'wtq6FnM3c8U', title: "Nicopatty - Nico's Nextbots OST" },
@@ -22,45 +36,87 @@ const CONFIG = {
 const TRANSLATIONS = {
   en: {
     err_load: "Playback issue. This video might have restrictions. Skipping...",
-    err_restricted: "YouTube blocks this video here. Try the Invidious fallback player.",
-    err_try_invidious: "Try Invidious",
+    err_restricted: "YouTube blocks this video here. Try the alt-server fallback player.",
+    err_try_invidious: "Try Alt Server",
     err_invalid: "Invalid YouTube link or ID.",
-    iv_playing: "Playing via Invidious",
+    iv_playing: "Switched to alt server — YouTube blocks this video here",
+    iv_badge: "Alt Server",
     iv_back: "Back to YouTube player",
-    iv_label: "Invidious instance URL",
+    iv_label: "Custom alt-server URL (Piped or Invidious)",
     iv_save: "Save",
     iv_note: "Public instances change often — if playback fails, try a different one.",
+    err_iv_allfailed: "None of the alt servers could play this. Try again later, or set a custom instance via the swap-icon settings.",
+    iv_trying: "Trying another alt server ({n}/{total})…",
+    pl_loading: "Loading playlist…",
+    pl_added: "Added {n} tracks from the playlist",
+    pl_added_none: "Every track in that playlist is already in your queue",
+    err_playlist_failed: "Couldn't load that playlist from any alt server. Try a different instance in settings, or add individual video links instead.",
     welc_1: "To use <b>YT Radio Mode</b> seamlessly, install the <a href='https://gist.github.com/dotspencer/9d7eebe3a2140dbeace9d3ece5671bf1/raw/'>Userscript</a>.",
     btn_demo: "⚡ Play Sample Songs",
     queue_title: "Play Queue",
     clear: "Clear All",
-    search_place: "Paste YouTube link here...",
+    search_place: "YouTube link or playlist here...",
     notice_head: "Why do some videos fail?",
-    notice_body: "YouTube blocks embedding/playback on external domains for specific music videos, regional licenses, or content explicitly marked age-restricted. If a video refuses to load or errors out, it is caused directly by these API system restrictions.",
+    notice_body: "YouTube may block embedding certain videos on external websites due to copyright restrictions, regional limitations, or age-restricted content. When this happens, the app automatically tries to play the video through an alternative server (Piped, then Invidious) and displays a brief message letting you know it has switched. If playback also fails on all available servers, the song is skipped automatically.",
     resume_text: "Resume from where you left off?",
     resume_yes: "Continue",
-    resume_no: "Start Over"
+    resume_no: "Start Over",
+    sc_title: "Keyboard shortcuts",
+    sc_play: "Play / Pause",
+    sc_mute: "Mute / Unmute",
+    sc_autoplay: "Toggle Autoplay",
+    sc_next: "Next Track",
+    sc_prev: "Previous Track",
+    sc_loop: "Cycle Loop Mode",
+    sc_seekback: "Seek Back 5s",
+    sc_seekfwd: "Seek Forward 5s",
+    sc_volup: "Volume Up",
+    sc_voldown: "Volume Down",
+    sc_slower: "Slower Playback",
+    sc_faster: "Faster Playback",
+    sc_toggle: "Toggle This Menu"
   },
   ar: {
     err_load: "مشكلة في التشغيل. قد يحتوي هذا الفيديو على قيود. يتم التخطي...",
-    err_restricted: "يوتيوب يمنع تشغيل هذا الفيديو هنا. جرّب مشغّل Invidious البديل.",
-    err_try_invidious: "جرّب Invidious",
+    err_restricted: "يوتيوب يمنع تشغيل هذا الفيديو هنا. جرّب المشغّل البديل.",
+    err_try_invidious: "جرّب السيرفر البديل",
     err_invalid: "رابط أو معرف يوتيوب غير صالح.",
-    iv_playing: "التشغيل عبر Invidious",
+    iv_playing: "تم التحويل إلى سيرفر بديل — يوتيوب يمنع تشغيل هذا الفيديو هنا",
+    iv_badge: "سيرفر بديل",
     iv_back: "الرجوع لمشغّل يوتيوب",
-    iv_label: "رابط سيرفر Invidious",
+    iv_label: "رابط سيرفر بديل مخصص (Piped أو Invidious)",
     iv_save: "حفظ",
     iv_note: "السيرفرات العامة تتغير كثيرًا — إذا فشل التشغيل، جرّب سيرفر آخر.",
+    err_iv_allfailed: "لم يستطع أي سيرفر بديل تشغيل هذا الفيديو. حاول لاحقًا، أو حدد سيرفرًا مخصصًا من إعدادات أيقونة التبديل.",
+    iv_trying: "جارِ تجربة سيرفر بديل آخر ({n}/{total})…",
+    pl_loading: "جارِ تحميل قائمة التشغيل...",
+    pl_added: "تمت إضافة {n} أغنية من القائمة",
+    pl_added_none: "كل أغاني هذه القائمة موجودة بالفعل في قائمة التشغيل لديك",
+    err_playlist_failed: "تعذّر تحميل هذه القائمة من أي سيرفر بديل. جرّب سيرفرًا آخر من الإعدادات، أو أضف روابط الفيديوهات كل على حدة.",
     welc_1: "لإستخدام <b>وضع راديو يوتيوب</b> بسلاسة، قم بتثبيت هذا <a href='https://gist.github.com/dotspencer/9d7eebe3a2140dbeace9d3ece5671bf1/raw/'>السكربت</a>.",
     btn_demo: "⚡ تشغيل الأغاني التجريبية",
     queue_title: "قائمة التشغيل",
     clear: "مسح الكل",
-    search_place: "إلصق رابط اليوتيوب هنا...",
+    search_place: "رابط فيديو أو قائمة تشغيل من يوتيوب...",
     notice_head: "لماذا تفشل بعض الفيديوهات؟",
-    notice_body: "يقوم يوتيوب بحظر تشغيل أو تضمين مقاطع معينة على المواقع الخارجية لأسباب تتعلق بحقوق النشر، التراخيص الإقليمية، أو تصنيف المحتوى للبالغين. حدوث خطأ أو توقف الأغنية فجأة يعود لهذه القيود البرمجية المفروضة من السيرفر الرئيسي.",
+    notice_body: "قد يمنع يوتيوب تضمين بعض الفيديوهات في المواقع الخارجية بسبب حقوق النشر، أو القيود الإقليمية، أو تصنيف المحتوى للبالغين. عند حدوث ذلك، يحاول التطبيق تشغيل الفيديو تلقائيًا عبر أحد الخوادم البديلة (Piped ثم Invidious)، مع عرض رسالة قصيرة تُعلمك بأنه تم التحويل. وإذا تعذّر التشغيل عبر جميع الخوادم المتاحة أيضًا، فسيتم تخطي الأغنية تلقائيًا.",
     resume_text: "هل تريد المتابعة من حيث توقفت؟",
     resume_yes: "متابعة",
-    resume_no: "البدء من جديد"
+    resume_no: "البدء من جديد",
+    sc_title: "اختصارات لوحة المفاتيح",
+    sc_play: "تشغيل / إيقاف مؤقت",
+    sc_mute: "كتم / إلغاء الكتم",
+    sc_autoplay: "تبديل التشغيل التلقائي",
+    sc_next: "المقطع التالي",
+    sc_prev: "المقطع السابق",
+    sc_loop: "تبديل وضع التكرار",
+    sc_seekback: "رجوع 5 ثوانٍ",
+    sc_seekfwd: "تقديم 5 ثوانٍ",
+    sc_volup: "رفع الصوت",
+    sc_voldown: "خفض الصوت",
+    sc_slower: "تشغيل أبطأ",
+    sc_faster: "تشغيل أسرع",
+    sc_toggle: "تبديل هذه القائمة"
   }
 };
 
@@ -80,17 +136,23 @@ const App = {
   restartClickTimer: null,
   awesomeSequence: '',
   isAwesomeMode: false,
+  awesomeTimer: null,
+  pendingShortcutEvents: [],
   errorTimer: null,
+  autoIvNoticeTimer: null,
   lastSavedSec: 0,
   pendingResumeTime: 0,
-  invidiousInstance: '',
-  activePlaybackMode: 'youtube', // 'youtube' | 'invidious'
+  customProxyInstance: '',
+  activePlaybackMode: 'youtube',
+  ivAttempt: 0,
+  ivReason: 'restricted',
+  ivDuration: 0,
+  ivActiveBase: '',
 
   init() {
     this.loadSettings();
     this.bindDOMEvents();
     this.bindGlobalShortcuts();
-    this.bindEasterEgg();
     this.checkUrlParam();
     this.loadYouTubeAPI();
   },
@@ -137,10 +199,7 @@ const App = {
     this.currentTheme = themeName;
     localStorage.setItem('ytrm_theme', themeName);
     document.documentElement.setAttribute('data-theme', themeName);
-    
-    const themeIcon = document.getElementById('icon-theme');
-    if (themeIcon) themeIcon.textContent = themeName === 'dark' ? 'light_mode' : 'dark_mode';
-    
+
     const logoEl = document.getElementById('app-logo');
     const faviconEl = document.getElementById('app-favicon');
     if (logoEl && faviconEl) {
@@ -214,10 +273,10 @@ const App = {
       if (autoPlayBtn) autoPlayBtn.classList.toggle('active', this.autoPlay);
     }
 
-    const savedInstance = localStorage.getItem('ytrm_invidious_instance');
-    this.invidiousInstance = (savedInstance && savedInstance.trim()) || CONFIG.invidiousInstances[0];
+    const savedInstance = localStorage.getItem('ytrm_proxy_instance') || localStorage.getItem('ytrm_invidious_instance');
+    this.customProxyInstance = (savedInstance && savedInstance.trim()) || '';
     const ivInput = document.getElementById('input-iv-instance');
-    if (ivInput) ivInput.value = this.invidiousInstance;
+    if (ivInput) ivInput.value = this.customProxyInstance;
 
     const savedSpeed = parseFloat(localStorage.getItem('ytrm_speed'));
     if (!isNaN(savedSpeed)) {
@@ -339,61 +398,173 @@ const App = {
   },
 
   onPlayerError(event) {
-    // YT error codes: 2 bad param, 5 HTML5 player, 100 not found,
-    // 101/150 embedding disallowed by the video owner.
     const code = event && event.data;
     const item = this.queue[this.currentIndex];
-    if (item) item.isErrored = true;
-    this.renderQueue();
+    const isRestricted = (code === 101 || code === 150 || code === 100);
 
     this.isPlaying = false;
     const playIcon = document.getElementById('icon-play-state');
     if (playIcon) playIcon.textContent = 'play_arrow';
     clearInterval(this.updateLoop);
 
-    const isRestricted = (code === 101 || code === 150 || code === 100);
-    const toast = document.getElementById('notice-error');
-    const textEl = document.getElementById('error-toast-text');
-    if (textEl) textEl.innerHTML = TRANSLATIONS[this.currentLanguage][isRestricted ? 'err_restricted' : 'err_load'];
-    if (toast) toast.classList.remove('hidden');
-
-    const ivBtn = document.getElementById('btn-error-invidious');
-    if (ivBtn) {
-      ivBtn.style.display = isRestricted ? '' : 'none';
-      ivBtn.onclick = () => {
-        clearTimeout(this.errorTimer);
-        if (toast) toast.classList.add('hidden');
-        this.playViaInvidious(this.currentIndex);
-      };
+    if (isRestricted) {
+      this.playViaProxy(this.currentIndex);
+      this.showAutoInvidiousNotice();
+      return;
     }
 
+    if (item) item.isErrored = true;
+    this.renderQueue();
+
+    this.showToast(TRANSLATIONS[this.currentLanguage].err_load, 6000, () => {
+      if (this.autoPlay) this.next();
+    });
+  },
+
+  showToast(message, duration = 4000, onHide = null) {
+    const toast = document.getElementById('notice-error');
+    const textEl = document.getElementById('error-toast-text');
+    const ivBtn = document.getElementById('btn-error-invidious');
+    if (ivBtn) ivBtn.style.display = 'none';
+    if (textEl) textEl.innerHTML = message;
+    if (toast) toast.classList.remove('hidden');
     clearTimeout(this.errorTimer);
     this.errorTimer = setTimeout(() => {
       if (toast) toast.classList.add('hidden');
-      if (this.autoPlay) this.next();
-    }, 6000);
+      if (onHide) onHide();
+    }, duration);
   },
 
-  getInvidiousInstance() {
-    return this.invidiousInstance || CONFIG.invidiousInstances[0];
+  showAutoInvidiousNotice() {
+    const el = document.getElementById('notice-auto-invidious');
+    if (!el) return;
+    el.classList.remove('hidden');
+    clearTimeout(this.autoIvNoticeTimer);
+    this.autoIvNoticeTimer = setTimeout(() => el.classList.add('hidden'), 4000);
   },
 
-  setInvidiousInstance(url) {
+  setCustomProxyInstance(url) {
     const clean = (url || '').trim().replace(/\/+$/, '');
-    if (!clean) return;
-    this.invidiousInstance = clean;
-    localStorage.setItem('ytrm_invidious_instance', clean);
+    this.customProxyInstance = clean;
+    if (clean) {
+      localStorage.setItem('ytrm_proxy_instance', clean);
+    } else {
+      localStorage.removeItem('ytrm_proxy_instance');
+    }
+    localStorage.removeItem('ytrm_invidious_instance');
   },
 
-  playViaInvidious(index) {
-    if (index < 0 || index >= this.queue.length) return;
-    const item = this.queue[index];
+  getProxyTierList() {
+    const list = [];
+    if (this.customProxyInstance) {
+      list.push({ type: 'auto', base: this.customProxyInstance });
+    }
+    CONFIG.proxyTiers.forEach(tier => {
+      tier.instances.forEach(base => {
+        if (!list.some(e => e.base === base)) list.push({ type: tier.type, base });
+      });
+    });
+    return list;
+  },
 
+  async fetchJson(url, ms = 7000) {
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), ms);
+    try {
+      const res = await fetch(url, { signal: ctrl.signal });
+      if (!res.ok) throw new Error('bad status ' + res.status);
+      return await res.json();
+    } finally {
+      clearTimeout(timer);
+    }
+  },
+
+  pickInvidiousStreamUrl(base, data) {
+    const abs = (u) => (u && u.startsWith('http')) ? u : `${base}${u}`;
+    const audioOnly = (data.adaptiveFormats || []).filter(f => (f.type || '').startsWith('audio/') && f.url);
+    if (audioOnly.length) {
+      audioOnly.sort((a, b) => (parseInt(b.bitrate, 10) || 0) - (parseInt(a.bitrate, 10) || 0));
+      return abs(audioOnly[0].url);
+    }
+    const muxed = (data.formatStreams || []).filter(f => f.url);
+    if (muxed.length) {
+      const preferred = muxed.find(f => String(f.itag) === '18') || muxed[0];
+      return abs(preferred.url);
+    }
+    return null;
+  },
+
+  pickPipedStreamUrl(data) {
+    const audioOnly = (data.audioStreams || []).filter(f => f.url);
+    if (!audioOnly.length) return null;
+    audioOnly.sort((a, b) => (parseInt(b.bitrate, 10) || 0) - (parseInt(a.bitrate, 10) || 0));
+    return audioOnly[0].url;
+  },
+
+  async resolveProxyStream(tier, videoId) {
+    const base = tier.base;
+
+    const tryPiped = async () => {
+      const data = await this.fetchJson(`${base}/streams/${videoId}`, 7000);
+      const streamUrl = this.pickPipedStreamUrl(data);
+      if (!streamUrl) throw new Error('no piped stream');
+      return { streamUrl, durationSeconds: data.duration || 0 };
+    };
+
+    const tryInvidious = async () => {
+      const data = await this.fetchJson(`${base}/api/v1/videos/${videoId}?fields=adaptiveFormats,formatStreams,lengthSeconds`, 7000);
+      const streamUrl = this.pickInvidiousStreamUrl(base, data);
+      if (!streamUrl) throw new Error('no invidious stream');
+      return { streamUrl, durationSeconds: data.lengthSeconds || 0 };
+    };
+
+    if (tier.type === 'piped') return tryPiped();
+    if (tier.type === 'invidious') return tryInvidious();
+
+    try {
+      return await tryPiped();
+    } catch (e) {
+      return await tryInvidious();
+    }
+  },
+
+  async playViaProxy(index, attempt = 0, reason = 'restricted') {
+    if (index < 0 || index >= this.queue.length) return;
+    const tiers = this.getProxyTierList();
+    if (attempt === 0) this.ivReason = reason;
+
+    if (attempt >= tiers.length) {
+      this.activePlaybackMode = 'youtube';
+      document.getElementById('invidious-badge').classList.add('hidden');
+      clearInterval(this.updateLoop);
+
+      if (this.ivReason === 'manual') {
+        this.showToast(TRANSLATIONS[this.currentLanguage].err_iv_allfailed, 5000);
+        this.playAtIndex(index);
+        return;
+      }
+
+      const deadItem = this.queue[index];
+      if (deadItem) deadItem.isErrored = true;
+      this.renderQueue();
+
+      this.showToast(TRANSLATIONS[this.currentLanguage].err_iv_allfailed, 6000, () => {
+        if (this.autoPlay) this.next();
+      });
+      return;
+    }
+
+    if (attempt > 0) {
+      const msg = TRANSLATIONS[this.currentLanguage].iv_trying
+        .replace('{n}', attempt + 1).replace('{total}', tiers.length);
+      this.showToast(msg, 2500);
+    }
+
+    const item = this.queue[index];
     this.currentIndex = index;
     this.saveQueueState();
     this.renderQueue();
 
-    // Stop the hidden YouTube player so it doesn't play alongside Invidious.
     if (this.player && this.player.stopVideo) {
       try { this.player.stopVideo(); } catch (e) {}
     }
@@ -404,25 +575,170 @@ const App = {
     document.getElementById('notice-resume').classList.add('hidden');
     document.getElementById('panel-welcome').classList.add('hidden');
 
-    this.activePlaybackMode = 'invidious';
-    const base = this.getInvidiousInstance();
-    const frame = document.getElementById('invidious-frame');
-    if (frame) frame.src = `${base}/embed/${item.id}?autoplay=1`;
+    this.activePlaybackMode = 'proxy';
+    this.ivAttempt = attempt;
+    this.bindProxyAudioEvents();
 
-    document.getElementById('invidious-player-wrap').classList.remove('hidden');
-    document.getElementById('player-thumbnail').style.backgroundImage = `url('${CONFIG.defaultThumb.replace('{id}', item.id)}')`;
+    document.getElementById('invidious-badge').classList.remove('hidden');
     this.setPlayerTitle(item.title);
+    document.getElementById('player-thumbnail').style.backgroundImage = `url('${CONFIG.defaultThumb.replace('{id}', item.id)}')`;
+
+    this.isPlaying = true;
+    document.getElementById('icon-play-state').textContent = 'pause';
+    document.getElementById('time-current').textContent = '0:00';
+    document.getElementById('time-total').textContent = '0:00';
+    document.getElementById('progress-fill').style.width = '0%';
+
+    const tier = tiers[attempt];
+    const audio = document.getElementById('invidious-audio');
+
+    let resolved;
+    try {
+      resolved = await this.resolveProxyStream(tier, item.id);
+    } catch (e) {
+      this.playViaProxy(index, attempt + 1);
+      return;
+    }
+
+    if (this.activePlaybackMode !== 'proxy' || this.currentIndex !== index) return;
+
+    this.ivActiveBase = tier.base;
+    this.ivDuration = resolved.durationSeconds;
+
+    const vol = this.isMuted ? 0 : this.savedVolume;
+    audio.volume = Math.min(1, Math.max(0, vol / 100));
+    audio.playbackRate = this.currentSpeed;
+    audio.src = resolved.streamUrl;
+
+    audio.play().catch(() => {
+      if (this.activePlaybackMode === 'proxy' && this.currentIndex === index) {
+        this.playViaProxy(index, attempt + 1);
+      }
+    });
+
+    this.startProgressTracker();
   },
 
   stopInvidious() {
-    if (this.activePlaybackMode !== 'invidious') return;
+    if (this.activePlaybackMode !== 'proxy') return;
     this.activePlaybackMode = 'youtube';
-    const frame = document.getElementById('invidious-frame');
-    if (frame) frame.src = 'about:blank';
-    document.getElementById('invidious-player-wrap').classList.add('hidden');
+    const audio = document.getElementById('invidious-audio');
+    if (audio) {
+      audio.pause();
+      audio.removeAttribute('src');
+      audio.load();
+    }
+    clearInterval(this.updateLoop);
+    document.getElementById('invidious-badge').classList.add('hidden');
   },
 
-  addToQueue(id, title = "Loading Track...") {
+  bindProxyAudioEvents() {
+    const a = document.getElementById('invidious-audio');
+    if (!a || a.dataset.bound) return;
+    a.dataset.bound = 'true';
+
+    a.addEventListener('error', () => {
+      if (this.activePlaybackMode !== 'proxy') return;
+      this.playViaProxy(this.currentIndex, (this.ivAttempt || 0) + 1);
+    });
+
+    a.addEventListener('ended', () => {
+      if (this.activePlaybackMode !== 'proxy') return;
+      this.handleProxyEnded();
+    });
+  },
+
+  handleProxyEnded() {
+    clearInterval(this.updateLoop);
+
+    if (this.loopMode === 'one') {
+      const audio = document.getElementById('invidious-audio');
+      audio.currentTime = 0;
+      audio.play();
+    } else if (this.loopMode === 'all' && this.currentIndex === this.queue.length - 1) {
+      this.playAtIndex(0);
+    } else if (this.autoPlay) {
+      this.next();
+    } else {
+      this.isPlaying = false;
+      document.getElementById('icon-play-state').textContent = 'play_arrow';
+    }
+  },
+
+  mediaGetCurrentTime() {
+    if (this.activePlaybackMode === 'proxy') {
+      const a = document.getElementById('invidious-audio');
+      return (a && !isNaN(a.currentTime)) ? a.currentTime : 0;
+    }
+    return (this.player && this.player.getCurrentTime) ? this.player.getCurrentTime() : 0;
+  },
+
+  mediaGetDuration() {
+    if (this.activePlaybackMode === 'proxy') {
+      const a = document.getElementById('invidious-audio');
+      if (a && a.duration && isFinite(a.duration)) return a.duration;
+      return this.ivDuration || 0;
+    }
+    return (this.player && this.player.getDuration) ? this.player.getDuration() : 0;
+  },
+
+  mediaSeekTo(seconds) {
+    const target = Math.max(0, seconds);
+    if (this.activePlaybackMode === 'proxy') {
+      const a = document.getElementById('invidious-audio');
+      if (a) a.currentTime = target;
+      return;
+    }
+    if (this.player && this.player.seekTo) this.player.seekTo(target, true);
+  },
+
+  mediaPlay() {
+    if (this.activePlaybackMode === 'proxy') {
+      const a = document.getElementById('invidious-audio');
+      if (a) {
+        a.play();
+        this.isPlaying = true;
+        document.getElementById('icon-play-state').textContent = 'pause';
+        this.startProgressTracker();
+      }
+      return;
+    }
+    if (this.player && this.player.playVideo) this.player.playVideo();
+  },
+
+  mediaPause() {
+    if (this.activePlaybackMode === 'proxy') {
+      const a = document.getElementById('invidious-audio');
+      if (a) {
+        a.pause();
+        this.isPlaying = false;
+        document.getElementById('icon-play-state').textContent = 'play_arrow';
+        clearInterval(this.updateLoop);
+      }
+      return;
+    }
+    if (this.player && this.player.pauseVideo) this.player.pauseVideo();
+  },
+
+  mediaSetVolume(vol) {
+    if (this.activePlaybackMode === 'proxy') {
+      const a = document.getElementById('invidious-audio');
+      if (a) a.volume = Math.min(1, Math.max(0, vol / 100));
+      return;
+    }
+    if (this.player && this.player.setVolume) this.player.setVolume(vol);
+  },
+
+  mediaSetPlaybackRate(rate) {
+    if (this.activePlaybackMode === 'proxy') {
+      const a = document.getElementById('invidious-audio');
+      if (a) a.playbackRate = rate;
+      return;
+    }
+    if (this.player && this.player.setPlaybackRate) this.player.setPlaybackRate(rate);
+  },
+
+  addToQueue(id, title = "Loading Track...", playNow = true) {
     if (!id) return;
     if (this.queue.some(item => item.id === id)) return;
 
@@ -433,7 +749,7 @@ const App = {
 
     this.fetchTrackMetadata(newItem);
 
-    if (this.currentIndex === -1) {
+    if (playNow || this.currentIndex === -1) {
       this.playAtIndex(this.queue.length - 1);
     }
   },
@@ -525,7 +841,7 @@ const App = {
             <div class="qi-title">${item.title}</div>
           </div>
         </div>
-        <button class="btn-link btn-invidious" title="Play via Invidious (works around YouTube restrictions)" data-index="${index}">
+        <button class="btn-link btn-invidious" title="Play via alt server (works around YouTube restrictions)" data-index="${index}">
           <span class="material-icons">swap_horiz</span>
         </button>
         <button class="btn-link" title="Open original video" data-id="${item.id}">
@@ -541,7 +857,7 @@ const App = {
 
       row.querySelector('.btn-invidious').addEventListener('click', (e) => {
         e.stopPropagation();
-        this.playViaInvidious(index);
+        this.playViaProxy(index, 0, 'manual');
       });
 
       row.querySelector('[data-id]').addEventListener('click', (e) => {
@@ -626,6 +942,146 @@ const App = {
     return (match && match[2].length === 11) ? match[2] : null;
   },
 
+  extractPlaylistId(input) {
+    const match = input.trim().match(/[?&]list=([a-zA-Z0-9_-]+)/);
+    return match ? match[1] : null;
+  },
+
+  async addFromInput(rawInput) {
+    const clean = (rawInput || '').trim();
+    if (!clean) return;
+
+    const playlistId = this.extractPlaylistId(clean);
+    if (playlistId) {
+      await this.addPlaylistById(playlistId);
+      return;
+    }
+
+    const videoId = this.extractVideoId(clean);
+    if (videoId) {
+      this.addToQueue(videoId, "Custom Track Link");
+    } else {
+      this.showToast(TRANSLATIONS[this.currentLanguage].err_invalid);
+    }
+  },
+
+  async addPlaylistById(playlistId) {
+    this.showToast(TRANSLATIONS[this.currentLanguage].pl_loading, 8000);
+    const tiers = this.getProxyTierList();
+
+    for (let i = 0; i < tiers.length; i++) {
+      try {
+        const videos = await this.fetchProxyPlaylistVideos(tiers[i], playlistId);
+        if (!videos || videos.length === 0) continue;
+
+        const capped = videos.slice(0, CONFIG.maxPlaylistTracks);
+        const firstNewIndex = this.queue.length;
+        let added = 0;
+
+        capped.forEach(v => {
+          if (!v.videoId || this.queue.some(item => item.id === v.videoId)) return;
+          const newItem = { id: v.videoId, title: v.title || "Loading Track...", isErrored: false };
+          this.queue.push(newItem);
+          added++;
+          if (!v.title) this.fetchTrackMetadata(newItem);
+        });
+
+        this.saveQueueState();
+        this.renderQueue();
+
+        if (added > 0) {
+          const msg = TRANSLATIONS[this.currentLanguage].pl_added.replace('{n}', added);
+          this.showToast(msg, 4000);
+          if (this.currentIndex === -1) this.playAtIndex(firstNewIndex);
+        } else {
+          this.showToast(TRANSLATIONS[this.currentLanguage].pl_added_none, 4000);
+        }
+        return;
+      } catch (e) {
+      }
+    }
+
+    this.showToast(TRANSLATIONS[this.currentLanguage].err_playlist_failed, 6000);
+  },
+
+  async fetchProxyPlaylistVideos(tier, playlistId) {
+    if (tier.type === 'piped') return this.fetchPipedPlaylistVideos(tier.base, playlistId);
+    if (tier.type === 'invidious') return this.fetchInvidiousPlaylistVideos(tier.base, playlistId);
+    try {
+      return await this.fetchPipedPlaylistVideos(tier.base, playlistId);
+    } catch (e) {
+      return this.fetchInvidiousPlaylistVideos(tier.base, playlistId);
+    }
+  },
+
+  async fetchInvidiousPlaylistVideos(base, playlistId) {
+    const collected = [];
+    const maxPages = 10;
+    let expectedTotal = null;
+
+    for (let page = 1; page <= maxPages; page++) {
+      let data;
+      try {
+        data = await this.fetchJson(`${base}/api/v1/playlists/${encodeURIComponent(playlistId)}?page=${page}`, 7000);
+      } catch (e) {
+        if (page === 1) throw e;
+        break;
+      }
+
+      if (!data || !Array.isArray(data.videos)) {
+        if (page === 1) throw new Error('bad playlist payload');
+        break;
+      }
+
+      if (page === 1 && typeof data.videoCount === 'number') expectedTotal = data.videoCount;
+      if (data.videos.length === 0) break;
+
+      collected.push(...data.videos);
+
+      if (expectedTotal !== null && collected.length >= expectedTotal) break;
+      if (data.videos.length < 20) break;
+    }
+
+    if (collected.length === 0) throw new Error('empty playlist result');
+    return collected;
+  },
+
+  async fetchPipedPlaylistVideos(base, playlistId) {
+    const collected = [];
+    const maxPages = 10;
+    let nextpage = null;
+
+    for (let page = 1; page <= maxPages; page++) {
+      let data;
+      try {
+        const url = page === 1
+          ? `${base}/playlists/${encodeURIComponent(playlistId)}`
+          : `${base}/nextpage/playlist?playlistId=${encodeURIComponent(playlistId)}&nextpage=${encodeURIComponent(nextpage)}`;
+        data = await this.fetchJson(url, 7000);
+      } catch (e) {
+        if (page === 1) throw e;
+        break;
+      }
+
+      if (!data || !Array.isArray(data.relatedStreams)) {
+        if (page === 1) throw new Error('bad playlist payload');
+        break;
+      }
+      if (data.relatedStreams.length === 0) break;
+
+      data.relatedStreams.forEach(s => {
+        const match = (s.url || '').match(/[?&]v=([a-zA-Z0-9_-]{11})/);
+        if (match) collected.push({ videoId: match[1], title: s.title || '' });
+      });
+
+      nextpage = data.nextpage || null;
+      if (!nextpage) break;
+    }
+
+    if (collected.length === 0) throw new Error('empty playlist result');
+    return collected;
+  },
+
   startProgressTracker() {
     clearInterval(this.updateLoop);
     const fill = document.getElementById('progress-fill');
@@ -633,14 +1089,13 @@ const App = {
     const totEl = document.getElementById('time-total');
 
     this.updateLoop = setInterval(() => {
-      if (!this.player || !this.player.getCurrentTime) return;
-      const current = this.player.getCurrentTime();
-      const duration = this.player.getDuration();
+      const current = this.mediaGetCurrentTime();
+      const duration = this.mediaGetDuration();
 
       if (duration > 0) {
-        const pct = (current / duration) * 100;
+        const pct = Math.min(100, (current / duration) * 100);
         fill.style.width = `${pct}%`;
-        curEl.textContent = this.formatTime(current);
+        curEl.textContent = this.formatTime(Math.min(current, duration));
         totEl.textContent = this.formatTime(duration);
         
         const currentSec = Math.floor(current);
@@ -648,6 +1103,7 @@ const App = {
           localStorage.setItem('ytrm_currentTime', currentSec);
           this.lastSavedSec = currentSec;
         }
+
       }
     }, 350);
   },
@@ -671,45 +1127,59 @@ const App = {
 
     localStorage.setItem('ytrm_speed', speed);
 
-    if (this.player && this.player.setPlaybackRate) {
-      this.player.setPlaybackRate(speed);
-    }
+    this.mediaSetPlaybackRate(speed);
+  },
+
+  resetSpeed() {
+    this.changeSpeed(1);
+  },
+
+  resetVolume() {
+    this.isMuted = false;
+    this.savedVolume = 100;
+    this.mediaSetVolume(100);
+    this.updateVolumeUI(100);
+    localStorage.setItem('ytrm_vol', 100);
+    localStorage.setItem('ytrm_muted', 'false');
   },
 
   toggleMute() {
-    if (!this.player) return;
-    
     this.isMuted = !this.isMuted;
-    this.player.setVolume(this.isMuted ? 0 : this.savedVolume);
+    this.mediaSetVolume(this.isMuted ? 0 : this.savedVolume);
     this.updateVolumeUI(this.isMuted ? 0 : this.savedVolume);
     
     localStorage.setItem('ytrm_muted', this.isMuted); 
   },
 
-  cycleLoopMode() {
+  setLoopMode(mode) {
     const loopBtn = document.getElementById('ctrl-loop');
     const loopIcon = document.getElementById('icon-loop');
-    if (this.loopMode === 'off') {
-      this.loopMode = 'all';
+    this.loopMode = mode;
+
+    if (mode === 'all') {
       loopBtn.className = 'btn-icon active-all';
       loopIcon.textContent = 'repeat';
       loopBtn.title = 'Repeat Queue (Shift+L)';
-    } else if (this.loopMode === 'all') {
-      this.loopMode = 'one';
+    } else if (mode === 'one') {
       loopBtn.className = 'btn-icon active-one';
       loopIcon.textContent = 'repeat_one';
       loopBtn.title = 'Repeat Current Song (Shift+L)';
     } else {
-      this.loopMode = 'off';
       loopBtn.className = 'btn-icon';
       loopIcon.textContent = 'repeat';
       loopBtn.title = 'Loop Modes Off (Shift+L)';
     }
   },
 
+  cycleLoopMode() {
+    if (this.loopMode === 'off') this.setLoopMode('all');
+    else if (this.loopMode === 'all') this.setLoopMode('one');
+    else this.setLoopMode('off');
+  },
+
   togglePlayPause() {
-    if (!this.player) return;
-    this.isPlaying ? this.player.pauseVideo() : this.player.playVideo();
+    if (this.activePlaybackMode === 'youtube' && !this.player) return;
+    this.isPlaying ? this.mediaPause() : this.mediaPlay();
   },
 
   bindDOMEvents() {
@@ -723,7 +1193,7 @@ const App = {
     });
 
     document.getElementById('ctrl-restart').addEventListener('click', () => {
-      if (!this.player) return;
+      if (this.activePlaybackMode === 'youtube' && !this.player) return;
       if (this.restartClickTimer) {
         clearTimeout(this.restartClickTimer);
         this.restartClickTimer = null;
@@ -731,7 +1201,7 @@ const App = {
       } else {
         this.restartClickTimer = setTimeout(() => {
           this.restartClickTimer = null;
-          this.player.seekTo(0);
+          this.mediaSeekTo(0);
         }, 300);
       }
     });
@@ -739,10 +1209,11 @@ const App = {
     document.getElementById('ctrl-next').addEventListener('click', () => this.next());
 
     document.getElementById('progress-timeline').addEventListener('click', (e) => {
-      if (!this.player || !this.player.getDuration) return;
+      const duration = this.mediaGetDuration();
+      if (!duration) return;
       const rect = e.currentTarget.getBoundingClientRect();
       const pct = (e.clientX - rect.left) / rect.width;
-      this.player.seekTo(pct * this.player.getDuration());
+      this.mediaSeekTo(pct * duration);
     });
 
     const btnCloseNotice = document.getElementById('btn-close-notice');
@@ -797,10 +1268,14 @@ const App = {
     });
 
     document.getElementById('ctrl-mute').addEventListener('click', () => this.toggleMute());
+    document.getElementById('ctrl-mute').addEventListener('contextmenu', (e) => {
+      e.preventDefault();
+      this.resetVolume();
+    });
+
     document.getElementById('slider-volume').addEventListener('input', (e) => {
-      if (!this.player) return;
       const vol = parseInt(e.target.value);
-      this.player.setVolume(vol);
+      this.mediaSetVolume(vol);
       this.isMuted = (vol === 0);
       
       if (vol > 0) this.savedVolume = vol;
@@ -808,14 +1283,31 @@ const App = {
       localStorage.setItem('ytrm_muted', this.isMuted);
       this.updateVolumeUI(vol);
     });
+    document.getElementById('slider-volume').addEventListener('contextmenu', (e) => {
+      e.preventDefault();
+      this.resetVolume();
+    });
 
     document.getElementById('slider-speed').addEventListener('input', (e) => {
       this.changeSpeed(e.target.value);
+    });
+    document.getElementById('slider-speed').addEventListener('contextmenu', (e) => {
+      e.preventDefault();
+      this.resetSpeed();
     });
     document.getElementById('ctrl-speed').addEventListener('click', () => {
       let target = this.currentSpeed + 0.25;
       if (target > 4) target = 0.25;
       this.changeSpeed(target);
+    });
+    document.getElementById('ctrl-speed').addEventListener('contextmenu', (e) => {
+      e.preventDefault();
+      this.resetSpeed();
+    });
+
+    document.getElementById('ctrl-loop').addEventListener('contextmenu', (e) => {
+      e.preventDefault();
+      this.setLoopMode('off');
     });
 
     document.getElementById('toggle-lang').addEventListener('click', () => {
@@ -823,21 +1315,41 @@ const App = {
       this.setLanguage(targetLang);
     });
 
-    document.getElementById('toggle-theme').addEventListener('click', () => {
-      const targetTheme = this.currentTheme === 'dark' ? 'light' : 'dark';
-      this.setTheme(targetTheme);
+    document.getElementById('toggle-theme-picker').addEventListener('click', () => {
+      document.getElementById('panel-theme-picker').classList.toggle('hidden');
+    });
+
+    document.getElementById('panel-theme-picker').addEventListener('click', (e) => {
+      const btn = e.target.closest('.theme-swatch');
+      if (!btn) return;
+      this.setTheme(btn.getAttribute('data-theme-value'));
+      document.getElementById('panel-theme-picker').classList.add('hidden');
     });
 
     document.getElementById('toggle-iv-settings').addEventListener('click', () => {
       document.getElementById('panel-iv-settings').classList.toggle('hidden');
     });
 
+    document.getElementById('toggle-shortcuts').addEventListener('click', () => {
+      this.toggleShortcutsPopup();
+    });
+
+    document.getElementById('btn-close-shortcuts').addEventListener('click', () => {
+      document.getElementById('panel-shortcuts').classList.add('hidden');
+    });
+
+    document.getElementById('panel-shortcuts').addEventListener('click', (e) => {
+      if (e.target.id === 'panel-shortcuts') {
+        document.getElementById('panel-shortcuts').classList.add('hidden');
+      }
+    });
+
     document.getElementById('btn-iv-save').addEventListener('click', () => {
-      this.setInvidiousInstance(document.getElementById('input-iv-instance').value);
+      this.setCustomProxyInstance(document.getElementById('input-iv-instance').value);
       document.getElementById('panel-iv-settings').classList.add('hidden');
     });
 
-    document.getElementById('btn-iv-back').addEventListener('click', () => {
+    document.getElementById('invidious-badge').addEventListener('click', () => {
       this.stopInvidious();
       this.playAtIndex(this.currentIndex);
     });
@@ -846,16 +1358,8 @@ const App = {
       const input = document.getElementById('input-search');
       const query = input.value.trim();
       if (!query) return;
-      const parsedId = this.extractVideoId(query);
-      if (parsedId) {
-        this.addToQueue(parsedId, "Custom Track Link");
-      } else {
-        const toast = document.getElementById('notice-error');
-        toast.querySelector('[data-i18n]').innerHTML = TRANSLATIONS[this.currentLanguage].err_invalid;
-        toast.classList.remove('hidden');
-        setTimeout(() => toast.classList.add('hidden'), 4000);
-      }
       input.value = '';
+      this.addFromInput(query);
     };
 
     document.getElementById('btn-search').addEventListener('click', triggerSearch);
@@ -873,7 +1377,20 @@ const App = {
     });
 
     document.getElementById('btn-load-demo').addEventListener('click', () => {
-      CONFIG.demoTracks.forEach(track => this.addToQueue(track.id, track.title));
+      CONFIG.demoTracks.forEach(track => this.addToQueue(track.id, track.title, false));
+    });
+
+    document.addEventListener('click', (e) => {
+      const ivPanel = document.getElementById('panel-iv-settings');
+      const ivToggle = document.getElementById('toggle-iv-settings');
+      if (ivPanel && !ivPanel.classList.contains('hidden') && !ivPanel.contains(e.target) && !ivToggle.contains(e.target)) {
+        ivPanel.classList.add('hidden');
+      }
+      const themePanel = document.getElementById('panel-theme-picker');
+      const themeToggle = document.getElementById('toggle-theme-picker');
+      if (themePanel && !themePanel.classList.contains('hidden') && !themePanel.contains(e.target) && !themeToggle.contains(e.target)) {
+        themePanel.classList.add('hidden');
+      }
     });
   },
 
@@ -884,78 +1401,115 @@ const App = {
 
       const key = e.key.toLowerCase();
 
-      if (e.key === ' ' || key === 'k') {
+      if (e.key === 'Escape' && !document.getElementById('panel-shortcuts').classList.contains('hidden')) {
+        document.getElementById('panel-shortcuts').classList.add('hidden');
+        return;
+      }
+
+      if (key === '?') {
         e.preventDefault();
-        this.togglePlayPause();
+        this.toggleShortcutsPopup();
+        return;
       }
-      else if (key === 'm') {
-        this.toggleMute();
+
+      const oldSeq = this.awesomeSequence;
+      let seq = oldSeq + key;
+      if (!'awesome'.startsWith(seq)) {
+        seq = 'awesome'.startsWith(key) ? key : '';
       }
-      else if (key === 'a') {
-        this.autoPlay = !this.autoPlay;
-        document.getElementById('ctrl-autoplay').classList.toggle('active', this.autoPlay);
-        localStorage.setItem('ytrm_autoplay', this.autoPlay);
+      const extended = seq.length > oldSeq.length;
+      this.awesomeSequence = seq;
+
+      if (!extended) {
+        this.flushPendingShortcuts();
       }
-      else if (e.shiftKey && key === 'n') {
-        this.next();
+
+      if (seq === 'awesome') {
+        clearTimeout(this.awesomeTimer);
+        this.pendingShortcutEvents = [];
+        this.awesomeSequence = '';
+        this.toggleAwesomeMode();
+        return;
       }
-      else if (e.shiftKey && key === 'p') {
-        this.previous();
+
+      if (seq.length > 0) {
+        this.pendingShortcutEvents.push(e);
+        clearTimeout(this.awesomeTimer);
+        this.awesomeTimer = setTimeout(() => {
+          this.awesomeSequence = '';
+          this.flushPendingShortcuts();
+        }, 500);
+        return;
       }
-      else if (e.shiftKey && key === 'l') {
-        this.cycleLoopMode();
-      }
-      else if (e.key === '>' || e.key === '.') {
-        this.changeSpeed(this.currentSpeed + 0.25);
-      }
-      else if (e.key === '<' || e.key === ',') {
-        this.changeSpeed(this.currentSpeed - 0.25);
-      }
-      else if (e.key === 'ArrowUp') {
-        e.preventDefault();
-        const slider = document.getElementById('slider-volume');
-        slider.value = Math.min(100, parseInt(slider.value) + 5);
-        slider.dispatchEvent(new Event('input'));
-      }
-      else if (e.key === 'ArrowDown') {
-        e.preventDefault();
-        const slider = document.getElementById('slider-volume');
-        slider.value = Math.max(0, parseInt(slider.value) - 5);
-        slider.dispatchEvent(new Event('input'));
-      }
-      else if (e.key === 'ArrowRight') {
-        if (!this.player || !this.player.getCurrentTime) return;
-        this.player.seekTo(this.player.getCurrentTime() + 5, true);
-      }
-      else if (e.key === 'ArrowLeft') {
-        if (!this.player || !this.player.getCurrentTime) return;
-        this.player.seekTo(Math.max(0, this.player.getCurrentTime() - 5), true);
-      }
+
+      this.runShortcut(e, key);
     });
   },
 
-  bindEasterEgg() {
-    window.addEventListener('keydown', (e) => {
-      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+  flushPendingShortcuts() {
+    const events = this.pendingShortcutEvents;
+    this.pendingShortcutEvents = [];
+    events.forEach((evt) => this.runShortcut(evt, evt.key.toLowerCase()));
+  },
 
-      this.awesomeSequence += e.key.toLowerCase();
-      
-      if (this.awesomeSequence.length > 7) {
-        this.awesomeSequence = this.awesomeSequence.slice(-7);
-      }
+  toggleAwesomeMode() {
+    this.isAwesomeMode = !this.isAwesomeMode;
+    const progressFill = document.getElementById('progress-fill');
+    progressFill.classList.toggle('awesome-mode', this.isAwesomeMode);
+  },
 
-      if (this.awesomeSequence === 'awesome') {
-        this.isAwesomeMode = !this.isAwesomeMode;
-        const progressFill = document.getElementById('progress-fill');
-        
-        if (this.isAwesomeMode) {
-          progressFill.classList.add('awesome-mode');
-        } else {
-          progressFill.classList.remove('awesome-mode');
-        }
-        this.awesomeSequence = '';
-      }
-    });
+  runShortcut(e, key) {
+    if (e.key === ' ' || key === 'k') {
+      e.preventDefault();
+      this.togglePlayPause();
+    }
+    else if (key === 'm') {
+      this.toggleMute();
+    }
+    else if (key === 'a') {
+      this.autoPlay = !this.autoPlay;
+      document.getElementById('ctrl-autoplay').classList.toggle('active', this.autoPlay);
+      localStorage.setItem('ytrm_autoplay', this.autoPlay);
+    }
+    else if (e.shiftKey && key === 'n') {
+      this.next();
+    }
+    else if (e.shiftKey && key === 'p') {
+      this.previous();
+    }
+    else if (e.shiftKey && key === 'l') {
+      this.cycleLoopMode();
+    }
+    else if (e.key === '>' || e.key === '.') {
+      this.changeSpeed(this.currentSpeed + 0.25);
+    }
+    else if (e.key === '<' || e.key === ',') {
+      this.changeSpeed(this.currentSpeed - 0.25);
+    }
+    else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      const slider = document.getElementById('slider-volume');
+      slider.value = Math.min(100, parseInt(slider.value) + 5);
+      slider.dispatchEvent(new Event('input'));
+    }
+    else if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      const slider = document.getElementById('slider-volume');
+      slider.value = Math.max(0, parseInt(slider.value) - 5);
+      slider.dispatchEvent(new Event('input'));
+    }
+    else if (e.key === 'ArrowRight') {
+      e.preventDefault();
+      this.mediaSeekTo(this.mediaGetCurrentTime() + 5);
+    }
+    else if (e.key === 'ArrowLeft') {
+      e.preventDefault();
+      this.mediaSeekTo(this.mediaGetCurrentTime() - 5);
+    }
+  },
+
+  toggleShortcutsPopup() {
+    document.getElementById('panel-shortcuts').classList.toggle('hidden');
   },
 
   checkUrlParam() {

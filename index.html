@@ -17,22 +17,68 @@
 
   <header class="settings-bar">
     <button id="toggle-lang" class="btn-pill" aria-label="Switch Language">AR</button>
-    <button id="toggle-iv-settings" class="btn-circle" aria-label="Invidious Settings" title="Invidious fallback player settings">
+    <button id="toggle-iv-settings" class="btn-circle" aria-label="Alt Server Settings" title="Alt-server fallback player settings">
       <span class="material-icons">swap_horiz</span>
     </button>
     <button id="toggle-notice" class="btn-circle" aria-label="Show Notice">
       <span class="material-icons">help_outline</span>
     </button>
-    <button id="toggle-theme" class="btn-circle" aria-label="Toggle Theme">
-      <span id="icon-theme" class="material-icons">light_mode</span>
+    <button id="toggle-shortcuts" class="btn-circle" aria-label="Keyboard Shortcuts" title="Keyboard Shortcuts (?)">
+      <span class="material-icons">keyboard</span>
+    </button>
+    <button id="toggle-theme-picker" class="btn-circle" aria-label="Choose Theme" title="Choose a color theme">
+      <span class="material-icons">palette</span>
     </button>
   </header>
 
   <div id="panel-iv-settings" class="iv-settings-panel hidden lang-target">
-    <label for="input-iv-instance" data-i18n="iv_label">Invidious instance URL</label>
-    <input type="text" id="input-iv-instance" placeholder="https://yewtu.be">
+    <label for="input-iv-instance" data-i18n="iv_label">Custom alt-server URL (Piped or Invidious)</label>
+    <input type="text" id="input-iv-instance" placeholder="https://pipedapi.kavin.rocks">
     <button id="btn-iv-save" class="btn-pill" data-i18n="iv_save">Save</button>
     <p class="iv-note" data-i18n="iv_note">Public instances change often — if playback fails, try a different one.</p>
+  </div>
+
+  <div id="panel-theme-picker" class="theme-picker-panel hidden">
+    <div class="theme-grid">
+      <button class="theme-swatch" data-theme-value="dark"><span class="theme-swatch-dot" style="background: linear-gradient(135deg, #0a0a0c 50%, #ff0055 50%);"></span>Classic Dark</button>
+      <button class="theme-swatch" data-theme-value="light"><span class="theme-swatch-dot" style="background: linear-gradient(135deg, #f0f2f5 50%, #e11d48 50%);"></span>Classic Light</button>
+      <button class="theme-swatch" data-theme-value="onedark"><span class="theme-swatch-dot" style="background: linear-gradient(135deg, #282c34 50%, #61afef 50%);"></span>One Dark Pro</button>
+      <button class="theme-swatch" data-theme-value="catppuccin"><span class="theme-swatch-dot" style="background: linear-gradient(135deg, #1e1e2e 50%, #cba6f7 50%);"></span>Catppuccin</button>
+      <button class="theme-swatch" data-theme-value="tokyonight"><span class="theme-swatch-dot" style="background: linear-gradient(135deg, #1a1b26 50%, #7aa2f7 50%);"></span>Tokyo Night</button>
+      <button class="theme-swatch" data-theme-value="dracula"><span class="theme-swatch-dot" style="background: linear-gradient(135deg, #282a36 50%, #bd93f9 50%);"></span>Dracula Official</button>
+      <button class="theme-swatch" data-theme-value="material"><span class="theme-swatch-dot" style="background: linear-gradient(135deg, #212121 50%, #82aaff 50%);"></span>Material Theme</button>
+      <button class="theme-swatch" data-theme-value="nightowl"><span class="theme-swatch-dot" style="background: linear-gradient(135deg, #011627 50%, #7fdbca 50%);"></span>Night Owl</button>
+      <button class="theme-swatch" data-theme-value="gruvbox"><span class="theme-swatch-dot" style="background: linear-gradient(135deg, #282828 50%, #fe8019 50%);"></span>Gruvbox Material</button>
+      <button class="theme-swatch" data-theme-value="rosepine"><span class="theme-swatch-dot" style="background: linear-gradient(135deg, #191724 50%, #eb6f92 50%);"></span>Rosé Pine</button>
+      <button class="theme-swatch" data-theme-value="kanagawa"><span class="theme-swatch-dot" style="background: linear-gradient(135deg, #1f1f28 50%, #7e9cd8 50%);"></span>Kanagawa</button>
+      <button class="theme-swatch" data-theme-value="poimandres"><span class="theme-swatch-dot" style="background: linear-gradient(135deg, #1b1e28 50%, #5de4c7 50%);"></span>Poimandres</button>
+    </div>
+  </div>
+
+  <div id="panel-shortcuts" class="shortcuts-overlay hidden lang-target" role="dialog" aria-modal="true" aria-label="Keyboard shortcuts">
+    <div class="shortcuts-modal">
+      <div class="shortcuts-modal-header">
+        <h2 data-i18n="sc_title">Keyboard shortcuts</h2>
+        <button id="btn-close-shortcuts" class="btn-close-notice" aria-label="Close">
+          <span class="material-icons">close</span>
+        </button>
+      </div>
+      <div class="shortcuts-list">
+        <div class="shortcut-row"><div class="key-chips"><span class="key-chip">Space</span><span class="key-chip">K</span></div><span class="shortcut-label" data-i18n="sc_play">Play / Pause</span></div>
+        <div class="shortcut-row"><div class="key-chips"><span class="key-chip">M</span></div><span class="shortcut-label" data-i18n="sc_mute">Mute / Unmute</span></div>
+        <div class="shortcut-row"><div class="key-chips"><span class="key-chip">A</span></div><span class="shortcut-label" data-i18n="sc_autoplay">Toggle Autoplay</span></div>
+        <div class="shortcut-row"><div class="key-chips"><span class="key-chip">Shift</span><span class="key-chip">N</span></div><span class="shortcut-label" data-i18n="sc_next">Next Track</span></div>
+        <div class="shortcut-row"><div class="key-chips"><span class="key-chip">Shift</span><span class="key-chip">P</span></div><span class="shortcut-label" data-i18n="sc_prev">Previous Track</span></div>
+        <div class="shortcut-row"><div class="key-chips"><span class="key-chip">Shift</span><span class="key-chip">L</span></div><span class="shortcut-label" data-i18n="sc_loop">Cycle Loop Mode</span></div>
+        <div class="shortcut-row"><div class="key-chips"><span class="key-chip">←</span></div><span class="shortcut-label" data-i18n="sc_seekback">Seek Back 5s</span></div>
+        <div class="shortcut-row"><div class="key-chips"><span class="key-chip">→</span></div><span class="shortcut-label" data-i18n="sc_seekfwd">Seek Forward 5s</span></div>
+        <div class="shortcut-row"><div class="key-chips"><span class="key-chip">↑</span></div><span class="shortcut-label" data-i18n="sc_volup">Volume Up</span></div>
+        <div class="shortcut-row"><div class="key-chips"><span class="key-chip">↓</span></div><span class="shortcut-label" data-i18n="sc_voldown">Volume Down</span></div>
+        <div class="shortcut-row"><div class="key-chips"><span class="key-chip">,</span><span class="key-chip">&lt;</span></div><span class="shortcut-label" data-i18n="sc_slower">Slower Playback</span></div>
+        <div class="shortcut-row"><div class="key-chips"><span class="key-chip">.</span><span class="key-chip">&gt;</span></div><span class="shortcut-label" data-i18n="sc_faster">Faster Playback</span></div>
+        <div class="shortcut-row"><div class="key-chips"><span class="key-chip">?</span></div><span class="shortcut-label" data-i18n="sc_toggle">Toggle This Menu</span></div>
+      </div>
+    </div>
   </div>
 
   <main class="app-layout">
@@ -42,15 +88,13 @@
 
     <section class="main-column">
       <article class="player-card">
-        <div id="player-thumbnail" class="player-thumbnail" role="img" aria-label="Cover art"></div>
-
-        <div id="invidious-player-wrap" class="invidious-wrap hidden">
-          <iframe id="invidious-frame" class="invidious-frame" allow="autoplay; encrypted-media" allowfullscreen title="Invidious player"></iframe>
-          <div class="invidious-toolbar lang-target">
+        <div class="player-visual">
+          <div id="player-thumbnail" class="player-thumbnail" role="img" aria-label="Cover art"></div>
+          <audio id="invidious-audio" class="hidden" preload="auto" playsinline></audio>
+          <button id="invidious-badge" class="invidious-badge hidden" title="Back to YouTube player">
             <span class="material-icons">swap_horiz</span>
-            <span data-i18n="iv_playing">Playing via Invidious</span>
-            <button id="btn-iv-back" class="btn-text-action" data-i18n="iv_back">Back to YouTube player</button>
-          </div>
+            <span data-i18n="iv_badge">Alt Server</span>
+          </button>
         </div>
         
         <div class="player-metadata marquee-box">
@@ -125,7 +169,7 @@
     <section class="side-column">
       <div class="manager-card">
         <div class="search-box">
-          <input type="text" id="input-search" placeholder="Paste YouTube link here..." data-i18n-holder="search_place">
+          <input type="text" id="input-search" placeholder="Paste YouTube link or playlist here..." data-i18n-holder="search_place">
           <button id="btn-search" class="btn-search-trigger"><span class="material-icons">add</span></button>
         </div>
 
@@ -142,7 +186,12 @@
   <div id="notice-error" class="error-toast hidden" role="alert">
     <span class="material-icons">error_outline</span>
     <span id="error-toast-text" data-i18n="err_load">There is an issue loading this video. Skipping...</span>
-    <button id="btn-error-invidious" class="btn-pill" data-i18n="err_try_invidious">Try Invidious</button>
+    <button id="btn-error-invidious" class="btn-pill" data-i18n="err_try_invidious">Try Alt Server</button>
+  </div>
+
+  <div id="notice-auto-invidious" class="error-toast auto-iv-toast hidden" role="status">
+    <span class="material-icons">swap_horiz</span>
+    <span data-i18n="iv_playing">Playing via alt server</span>
   </div>
 
   <div id="notice-resume" class="resume-toast hidden lang-target" role="dialog">
