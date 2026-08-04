@@ -28,7 +28,7 @@ const CONFIG = {
     { id: '8GW6sLrK40k', title: 'HOME - Resonance' },
     { id: 'wtq6FnM3c8U', title: "Nicopatty - Nico's Nextbots OST" },
     { id: 'duPJqfKiA78', title: 'Hatsune Miku - Triple Baka' },
-    { id: 'rXLS7boKQxM', title: '𝘙𝘢ยด - ريمكس دمتي امي' },
+    { id: 'BHu5JM1v7dY', title: 'Joji - Die For You' },
     { id: 'svEtOP-s7H4', title: 'Birmo Salva - حكاية أبطال - اغنية فلسطين' }
   ]
 };
