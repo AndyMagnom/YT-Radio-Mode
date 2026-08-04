@@ -1396,6 +1396,28 @@ const App = {
       });
     });
 
+    // Touch devices have no hover: tap the icon opens/closes its flyout slider.
+    const isTouch = window.matchMedia('(hover: none), (pointer: coarse)').matches;
+    if (isTouch) {
+      document.querySelectorAll('.hover-flyout-container').forEach(container => {
+        const trigger = container.querySelector('.btn-icon-small');
+        if (!trigger) return;
+        trigger.addEventListener('click', (e) => {
+          const wasOpen = container.classList.contains('flyout-open');
+          document.querySelectorAll('.hover-flyout-container.flyout-open').forEach(c => c.classList.remove('flyout-open'));
+          if (!wasOpen) {
+            container.classList.add('flyout-open');
+            e.stopPropagation();
+          }
+        });
+      });
+      document.addEventListener('click', (e) => {
+        document.querySelectorAll('.hover-flyout-container.flyout-open').forEach(c => {
+          if (!c.contains(e.target)) c.classList.remove('flyout-open');
+        });
+      });
+    }
+
     document.getElementById('btn-load-demo').addEventListener('click', () => {
       CONFIG.demoTracks.forEach(track => this.addToQueue(track.id, track.title, false));
     });
