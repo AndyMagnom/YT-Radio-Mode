@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Material+Icons&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css?v=5">
 </head>
 <body>
   <div class="app-branding">
@@ -32,6 +32,7 @@
   </header>
 
   <div id="panel-iv-settings" class="iv-settings-panel hidden lang-target">
+    <div class="sheet-handle" aria-hidden="true"><span></span></div>
     <label for="input-iv-instance" data-i18n="iv_label">Custom alt-server URL (Piped or Invidious)</label>
     <input type="text" id="input-iv-instance" placeholder="https://pipedapi.kavin.rocks">
     <button id="btn-iv-save" class="btn-pill" data-i18n="iv_save">Save</button>
@@ -39,6 +40,7 @@
   </div>
 
   <div id="panel-theme-picker" class="theme-picker-panel hidden">
+    <div class="sheet-handle" aria-hidden="true"><span></span></div>
     <div class="theme-grid">
       <button class="theme-swatch" data-theme-value="dark"><span class="theme-swatch-dot" style="background: linear-gradient(135deg, #0a0a0c 50%, #ff0055 50%);"></span>Classic Dark</button>
       <button class="theme-swatch" data-theme-value="light"><span class="theme-swatch-dot" style="background: linear-gradient(135deg, #f0f2f5 50%, #e11d48 50%);"></span>Classic Light</button>
@@ -82,13 +84,10 @@
   </div>
 
   <main class="app-layout">
-    <div class="sr-only">
-      <div id="yt-hidden-player"></div>
-    </div>
-
     <section class="main-column">
       <article class="player-card">
         <div class="player-visual">
+          <div id="yt-hidden-player-wrap" aria-hidden="true"><div id="yt-hidden-player"></div></div>
           <div id="player-thumbnail" class="player-thumbnail" role="img" aria-label="Cover art"></div>
           <audio id="invidious-audio" class="hidden" preload="auto" playsinline></audio>
           <button id="invidious-badge" class="invidious-badge hidden" title="Back to YouTube player">
@@ -203,6 +202,6 @@
     </div>
   </div>
 
-  <script src="main.js" type="module"></script>
+  <script src="main.js?v=5" type="module"></script>
 </body>
 </html>

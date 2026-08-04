@@ -1,9 +1,6 @@
 const CONFIG = {
   liveDomain: 'andymagnom.github.io',
   defaultThumb: 'https://img.youtube.com/vi/{id}/hqdefault.jpg',
-  // Tiered fallback: Piped tried first (more surviving public instances,
-  // better resistance to YouTube blocking as of 2026), Invidious as
-  // secondary tier since its public network has shrunk considerably.
   proxyTiers: [
     {
       type: 'piped',
@@ -276,8 +273,6 @@ const App = {
       if (autoPlayBtn) autoPlayBtn.classList.toggle('active', this.autoPlay);
     }
 
-    // ytrm_proxy_instance is the new key; fall back to the old
-    // Invidious-only key so previously saved custom servers still work.
     const savedInstance = localStorage.getItem('ytrm_proxy_instance') || localStorage.getItem('ytrm_invidious_instance');
     this.customProxyInstance = (savedInstance && savedInstance.trim()) || '';
     const ivInput = document.getElementById('input-iv-instance');
@@ -332,6 +327,8 @@ const App = {
     }
 
     this.player = new YT.Player('yt-hidden-player', {
+      width: '100%',
+      height: '100%',
       playerVars: playerVars,
       events: {
         'onReady': () => this.onPlayerReady(),
@@ -459,10 +456,6 @@ const App = {
     localStorage.removeItem('ytrm_invidious_instance');
   },
 
-  // Flattened, ordered list of { type, base } tried in sequence:
-  // user's custom server first (type 'auto' — we probe both API shapes
-  // since we don't ask the user which kind it is), then every Piped
-  // instance, then every Invidious instance.
   getProxyTierList() {
     const list = [];
     if (this.customProxyInstance) {
@@ -510,9 +503,6 @@ const App = {
     return audioOnly[0].url;
   },
 
-  // Resolves { streamUrl, durationSeconds } for one tier entry, dispatching
-  // to the right API shape. For 'auto' (user's custom server) we don't know
-  // if it's Piped or Invidious, so we try Piped's shape then Invidious's.
   async resolveProxyStream(tier, videoId) {
     const base = tier.base;
 
@@ -533,7 +523,6 @@ const App = {
     if (tier.type === 'piped') return tryPiped();
     if (tier.type === 'invidious') return tryInvidious();
 
-    // auto: probe both shapes against the same custom base URL
     try {
       return await tryPiped();
     } catch (e) {
@@ -552,8 +541,6 @@ const App = {
       clearInterval(this.updateLoop);
 
       if (this.ivReason === 'manual') {
-        // manually forced, not flagged as restricted by YouTube itself —
-        // don't kill the track, just fall back to the normal player
         this.showToast(TRANSLATIONS[this.currentLanguage].err_iv_allfailed, 5000);
         this.playAtIndex(index);
         return;
@@ -615,7 +602,6 @@ const App = {
       return;
     }
 
-    // user may have skipped tracks while this instance was slow to respond
     if (this.activePlaybackMode !== 'proxy' || this.currentIndex !== index) return;
 
     this.ivActiveBase = tier.base;
@@ -1024,7 +1010,6 @@ const App = {
   async fetchProxyPlaylistVideos(tier, playlistId) {
     if (tier.type === 'piped') return this.fetchPipedPlaylistVideos(tier.base, playlistId);
     if (tier.type === 'invidious') return this.fetchInvidiousPlaylistVideos(tier.base, playlistId);
-    // auto: probe Piped's shape first, then Invidious's, against the same base
     try {
       return await this.fetchPipedPlaylistVideos(tier.base, playlistId);
     } catch (e) {
@@ -1064,8 +1049,6 @@ const App = {
     return collected;
   },
 
-  // Piped's /playlists/{id} returns { relatedStreams: [{url: "/watch?v=ID", title}], nextpage }
-  // Normalized here to the same {videoId, title} shape the queue code expects.
   async fetchPipedPlaylistVideos(base, playlistId) {
     const collected = [];
     const maxPages = 10;
@@ -1396,7 +1379,6 @@ const App = {
       });
     });
 
-    // Touch devices have no hover: tap the icon opens/closes its flyout slider.
     const isTouch = window.matchMedia('(hover: none), (pointer: coarse)').matches;
     if (isTouch) {
       document.querySelectorAll('.hover-flyout-container').forEach(container => {
@@ -1421,6 +1403,43 @@ const App = {
     document.getElementById('btn-load-demo').addEventListener('click', () => {
       CONFIG.demoTracks.forEach(track => this.addToQueue(track.id, track.title, false));
     });
+
+    const makeSheetDraggable = (panelEl) => {
+      const handle = panelEl.querySelector('.sheet-handle');
+      if (!handle) return;
+      let dragging = false, startY = 0, dragY = 0, panelHeight = 0;
+
+      handle.addEventListener('pointerdown', (e) => {
+        if (window.matchMedia('(min-width: 601px)').matches) return;
+        dragging = true;
+        startY = e.clientY;
+        dragY = 0;
+        panelHeight = panelEl.getBoundingClientRect().height;
+        panelEl.style.transition = 'none';
+        handle.setPointerCapture(e.pointerId);
+      });
+
+      handle.addEventListener('pointermove', (e) => {
+        if (!dragging) return;
+        dragY = Math.max(0, e.clientY - startY);
+        panelEl.style.transform = `translateY(${dragY}px)`;
+      });
+
+      const endDrag = () => {
+        if (!dragging) return;
+        dragging = false;
+        panelEl.style.transition = '';
+        panelEl.style.transform = '';
+        if (dragY > panelHeight * 0.22) {
+          panelEl.classList.add('hidden');
+        }
+        dragY = 0;
+      };
+      handle.addEventListener('pointerup', endDrag);
+      handle.addEventListener('pointercancel', endDrag);
+    };
+    makeSheetDraggable(document.getElementById('panel-iv-settings'));
+    makeSheetDraggable(document.getElementById('panel-theme-picker'));
 
     document.addEventListener('click', (e) => {
       const ivPanel = document.getElementById('panel-iv-settings');
@@ -1454,9 +1473,6 @@ const App = {
         return;
       }
 
-      // Track progress toward the "awesome" easter egg word. A key only
-      // reaches runShortcut() once we're sure it's NOT part of that word,
-      // so typing "awesome" no longer fires the a/m shortcuts along the way.
       const oldSeq = this.awesomeSequence;
       let seq = oldSeq + key;
       if (!'awesome'.startsWith(seq)) {
@@ -1466,8 +1482,6 @@ const App = {
       this.awesomeSequence = seq;
 
       if (!extended) {
-        // This key broke the pattern - any keys we were holding onto
-        // weren't actually part of the egg, so run their shortcuts now.
         this.flushPendingShortcuts();
       }
 
@@ -1480,8 +1494,6 @@ const App = {
       }
 
       if (seq.length > 0) {
-        // Could still be the start of "awesome" - hold this key's shortcut
-        // briefly instead of firing it immediately.
         this.pendingShortcutEvents.push(e);
         clearTimeout(this.awesomeTimer);
         this.awesomeTimer = setTimeout(() => {
