@@ -1,6 +1,6 @@
 <img width="1280" height="500" alt="YT Radio Mode" src="https://github.com/user-attachments/assets/f9fbadee-16bf-4e56-b8f9-0d63dd082f11" />
 
-[![ٍSwitch Language](https://img.shields.io/badge/README-English-23121011?style=for-the-badge&logo=markdown)](https://github.com/AndyMagnom/YT-Radio-Mode/blob/main/README_AR.md)
+[![ٍSwitch Language](https://img.shields.io/badge/README-Arabic-23121011?style=for-the-badge&logo=markdown)](https://github.com/AndyMagnom/YT-Radio-Mode/blob/main/README_AR.md)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg?style=for-the-badge)](LICENSE)
 [![Stack](https://img.shields.io/badge/Stack-HTML_%7C_CSS_%7C_JS-yellow?style=for-the-badge)](https://developer.mozilla.org/)
 ![Line](https://camo.githubusercontent.com/10f8fa99428441e9c807e0ea470e74c543a9b4d547e80f087b4be414c768e3bb/68747470733a2f2f63646e2e6a7364656c6976722e6e65742f67682f617765736f6d652d736372697074732f617765736f6d652d75736572736372697074732f6173736574732f696d616765732f736570617261746f72732f7261696e626f772d626c75652d746f2d7265642e706e67)
