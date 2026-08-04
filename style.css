@@ -161,6 +161,14 @@
 html, body { max-width: 100%; overflow-x: hidden; }
 html { scrollbar-gutter: stable; }
 
+.material-icons, button, .app-logo, .btn-pill, .btn-circle, .btn-icon, .btn-icon-small, .theme-swatch, .key-chip {
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  -webkit-touch-callout: none;
+}
+
 body {
   font-family: var(--font-sans);
   background-color: var(--bg-app);
