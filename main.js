@@ -173,10 +173,13 @@ const App = {
     return /[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\uFB50-\uFDFF\uFE70-\uFEFF]/.test(text);
   },  
 
-  setPlayerTitle(text) {
+  setPlayerTitle(text, isEmpty = false) {
     const titleEl = document.getElementById('player-title');
     const containerEl = titleEl ? titleEl.parentElement : null;
     if (!titleEl || !containerEl) return;
+
+    if (isEmpty) titleEl.setAttribute('data-i18n', 'no_track');
+    else titleEl.removeAttribute('data-i18n');
 
     const isRtl = this.isTextRtl(text);
 
@@ -710,6 +713,7 @@ const App = {
   },
 
   mediaSeekTo(seconds) {
+    if (this.currentIndex === -1) return;
     const target = Math.max(0, seconds);
     if (this.activePlaybackMode === 'proxy') {
       const a = document.getElementById('invidious-audio');
@@ -720,6 +724,7 @@ const App = {
   },
 
   mediaPlay() {
+    if (this.currentIndex === -1) return;
     if (this.activePlaybackMode === 'proxy') {
       const a = document.getElementById('invidious-audio');
       if (a) {
@@ -940,7 +945,7 @@ const App = {
         this.currentIndex = -1;
         this.stopInvidious();
         if (this.player) this.player.stopVideo();
-        this.setPlayerTitle('No track playing');
+        this.setPlayerTitle('No track playing', true);
         document.getElementById('player-thumbnail').style.backgroundImage = 'none';
         document.getElementById('panel-welcome').classList.remove('hidden');
       } else {
@@ -1289,7 +1294,13 @@ const App = {
       
       this.stopInvidious();
       if (this.player) this.player.stopVideo();
-      this.setPlayerTitle('No track playing');
+      clearInterval(this.updateLoop);
+      this.isPlaying = false;
+      document.getElementById('icon-play-state').textContent = 'play_arrow';
+      document.getElementById('progress-fill').style.width = '0%';
+      document.getElementById('time-current').textContent = '0:00';
+      document.getElementById('time-total').textContent = '0:00';
+      this.setPlayerTitle('No track playing', true);
       document.getElementById('player-thumbnail').style.backgroundImage = 'none';
       this.renderQueue();
       document.getElementById('panel-welcome').classList.remove('hidden');
