@@ -35,6 +35,7 @@ const CONFIG = {
 
 const TRANSLATIONS = {
   en: {
+    no_track: " No track playing",
     err_load: "Playback issue. This video might have restrictions. Skipping...",
     err_restricted: "YouTube blocks this video here. Try the alt-server fallback player.",
     err_try_invidious: "Try Alt Server",
@@ -52,7 +53,7 @@ const TRANSLATIONS = {
     pl_added_none: "Every track in that playlist is already in your queue",
     err_playlist_failed: "Couldn't load that playlist from any alt server. Try a different instance in settings, or add individual video links instead.",
     welc_1: "To use <b>YT Radio Mode</b> seamlessly, install the <a href='https://github.com/AndyMagnom/YT-Radio-Mode#-companion-userscript'>Userscript</a>.",
-    btn_demo: "Play Sample Songs",
+    btn_demo: "Play Sample Tracks",
     queue_title: "Play Queue",
     clear: "Clear All",
     search_place: "YouTube link or playlist here...",
@@ -74,9 +75,15 @@ const TRANSLATIONS = {
     sc_voldown: "Volume Down",
     sc_slower: "Slower Playback",
     sc_faster: "Faster Playback",
-    sc_toggle: "Toggle This Menu"
+    sc_toggle: "Toggle This Menu",
+    layout_title: "Queue &amp; Player Size",
+    layout_fixed: "Fixed size",
+    layout_fixed_desc: "Player and queue box never resize",
+    layout_expanded: "Expands with queue",
+    layout_expanded_desc: "Player and queue grow as you add tracks"
   },
   ar: {
+    no_track: "لا يوجد مقطع مشغّل",
     err_load: "مشكلة في التشغيل. قد يحتوي هذا الفيديو على قيود. يتم التخطي...",
     err_restricted: "يوتيوب يمنع تشغيل هذا الفيديو هنا. جرّب المشغّل البديل.",
     err_try_invidious: "جرّب السيرفر البديل",
@@ -94,10 +101,10 @@ const TRANSLATIONS = {
     pl_added_none: "كل أغاني هذه القائمة موجودة بالفعل في قائمة التشغيل لديك",
     err_playlist_failed: "تعذّر تحميل هذه القائمة من أي سيرفر بديل. جرّب سيرفرًا آخر من الإعدادات، أو أضف روابط الفيديوهات كل على حدة.",
     welc_1: "لإستخدام <b>وضع راديو يوتيوب</b> بسلاسة، قم بتثبيت هذا <a href='https://github.com/AndyMagnom/YT-Radio-Mode#-companion-userscript'>السكربت</a>.",
-    btn_demo: "تشغيل الأغاني التجريبية",
+    btn_demo: "تشغيل مقاطع تجريبية",
     queue_title: "قائمة التشغيل",
     clear: "مسح الكل",
-    search_place: "رابط فيديو أو قائمة تشغيل من يوتيوب...",
+    search_place: "...رابط مقطع أو قائمة تشغيل من يوتيوب هنا",
     notice_head: "لماذا تفشل بعض الفيديوهات؟",
     notice_body: "قد يمنع يوتيوب تضمين بعض الفيديوهات في المواقع الخارجية بسبب حقوق النشر، أو القيود الإقليمية، أو تصنيف المحتوى للبالغين. عند حدوث ذلك، يحاول التطبيق تشغيل الفيديو تلقائيًا عبر أحد الخوادم البديلة (Piped ثم Invidious)، مع عرض رسالة قصيرة تُعلمك بأنه تم التحويل. وإذا تعذّر التشغيل عبر جميع الخوادم المتاحة أيضًا، فسيتم تخطي الأغنية تلقائيًا.",
     resume_text: "هل تريد المتابعة من حيث توقفت؟",
@@ -116,7 +123,12 @@ const TRANSLATIONS = {
     sc_voldown: "خفض الصوت",
     sc_slower: "تشغيل أبطأ",
     sc_faster: "تشغيل أسرع",
-    sc_toggle: "تبديل هذه القائمة"
+    sc_toggle: "تبديل هذه القائمة",
+    layout_title: "حجم قائمة التشغيل والمشغل",
+    layout_fixed: "حجم ثابت",
+    layout_fixed_desc: "قائمة التشغيل والمشغل لا يتغير حجمهما",
+    layout_expanded: "تمديد مع القائمة",
+    layout_expanded_desc: "تكبر قائمة التشغيل والمشغل مع إضافة مقاطع"
   }
 };
 
@@ -208,6 +220,16 @@ const App = {
     }
   },
 
+  setLayout(layoutName) {
+    this.currentLayout = layoutName;
+    localStorage.setItem('ytrm_layout', layoutName);
+    document.documentElement.setAttribute('data-layout', layoutName);
+
+    document.querySelectorAll('.layout-swatch').forEach(btn => {
+      btn.classList.toggle('active', btn.getAttribute('data-layout-value') === layoutName);
+    });
+  },
+
   setLanguage(langCode) {
     this.currentLanguage = langCode;
     localStorage.setItem('ytrm_lang', langCode);
@@ -257,6 +279,9 @@ const App = {
     
     const savedTheme = localStorage.getItem('ytrm_theme') || 'dark';
     this.setTheme(savedTheme);
+
+    const savedLayout = localStorage.getItem('ytrm_layout') || 'fixed';
+    this.setLayout(savedLayout);
 
     const savedLang = localStorage.getItem('ytrm_lang') || 'en';
     this.setLanguage(savedLang);
@@ -1323,10 +1348,15 @@ const App = {
     });
 
     document.getElementById('panel-theme-picker').addEventListener('click', (e) => {
-      const btn = e.target.closest('.theme-swatch');
-      if (!btn) return;
-      this.setTheme(btn.getAttribute('data-theme-value'));
-      document.getElementById('panel-theme-picker').classList.add('hidden');
+      const themeBtn = e.target.closest('.theme-swatch');
+      if (themeBtn) {
+        this.setTheme(themeBtn.getAttribute('data-theme-value'));
+        document.getElementById('panel-theme-picker').classList.add('hidden');
+        return;
+      }
+
+      const layoutBtn = e.target.closest('.layout-swatch');
+      if (layoutBtn) this.setLayout(layoutBtn.getAttribute('data-layout-value'));
     });
 
     document.getElementById('toggle-iv-settings').addEventListener('click', () => {

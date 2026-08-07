@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en" data-theme="dark" data-layout="fixed">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -55,6 +55,24 @@
       <button class="theme-swatch" data-theme-value="kanagawa"><span class="theme-swatch-dot" style="background: linear-gradient(135deg, #1f1f28 50%, #7e9cd8 50%);"></span>Kanagawa</button>
       <button class="theme-swatch" data-theme-value="poimandres"><span class="theme-swatch-dot" style="background: linear-gradient(135deg, #1b1e28 50%, #5de4c7 50%);"></span>Poimandres</button>
     </div>
+    <div class="theme-picker-divider"></div>
+    <h3 class="theme-picker-subtitle lang-target" data-i18n="layout_title">Queue &amp; Player Size</h3>
+    <div class="layout-grid">
+      <button class="layout-swatch" data-layout-value="fixed">
+        <span class="material-icons layout-swatch-icon">crop_din</span>
+        <span class="layout-swatch-text">
+          <strong data-i18n="layout_fixed">Fixed size</strong>
+          <small data-i18n="layout_fixed_desc">Player and queue box never resize</small>
+        </span>
+      </button>
+      <button class="layout-swatch" data-layout-value="expanded">
+        <span class="material-icons layout-swatch-icon">unfold_more</span>
+        <span class="layout-swatch-text">
+          <strong data-i18n="layout_expanded">Expands with queue</strong>
+          <small data-i18n="layout_expanded_desc">Player and queue grow as you add tracks</small>
+        </span>
+      </button>
+    </div>
   </div>
 
   <div id="panel-shortcuts" class="shortcuts-overlay hidden lang-target" role="dialog" aria-modal="true" aria-label="Keyboard shortcuts">
@@ -97,7 +115,7 @@
         </div>
         
         <div class="player-metadata marquee-box">
-          <div id="player-title" class="player-title">No track playing</div>
+          <div id="player-title" data-i18n="no_track" class="player-title">No track playing</div>
         </div>
 
         <div class="player-progress">
@@ -111,38 +129,42 @@
         </div>
 
         <div class="player-controls">
-          <button id="ctrl-loop" class="btn-icon" title="Toggle Loop Mode (Shift+L)">
-            <span id="icon-loop" class="material-icons">repeat</span>
-          </button>
-          <button id="ctrl-restart" class="btn-icon" title="Previous Track (Shift+P)">
-            <span class="material-icons">skip_previous</span>
-          </button>
-          <button id="ctrl-play" class="btn-icon btn-play" title="Play/Pause (K / Space)">
-            <span id="icon-play-state" class="material-icons">play_arrow</span>
-          </button>
-          <button id="ctrl-next" class="btn-icon" title="Next Track (Shift+N)">
-            <span class="material-icons">skip_next</span>
-          </button>
-          <button id="ctrl-autoplay" class="btn-icon active" title="Toggle Autoplay (A)">
-            <span class="material-icons">play_circle_filled</span>
-          </button>
-          
-          <div class="hover-flyout-container">
-            <button id="ctrl-speed" class="btn-icon-small" title="Playback Speed (< / >)">
-              <span class="material-icons">speed</span>
-              <span id="label-speed" class="badge-speed">1x</span>
+          <div class="controls-row controls-row-transport">
+            <button id="ctrl-restart" class="btn-icon" title="Previous Track (Shift+P)">
+              <span class="material-icons">skip_previous</span>
             </button>
-            <div class="flyout-slider">
-              <input type="range" id="slider-speed" min="0.25" max="4" step="0.25" value="1">
-            </div>
+            <button id="ctrl-play" class="btn-icon btn-play" title="Play/Pause (K / Space)">
+              <span id="icon-play-state" class="material-icons">play_arrow</span>
+            </button>
+            <button id="ctrl-next" class="btn-icon" title="Next Track (Shift+N)">
+              <span class="material-icons">skip_next</span>
+            </button>
           </div>
-
-          <div class="hover-flyout-container">
-            <button id="ctrl-mute" class="btn-icon-small" title="Mute/Unmute (M)">
-              <span id="icon-volume" class="material-icons">volume_up</span>
+          <div class="controls-row controls-row-secondary">
+            <button id="ctrl-loop" class="btn-icon" title="Toggle Loop Mode (Shift+L)">
+              <span id="icon-loop" class="material-icons">repeat</span>
             </button>
-            <div class="flyout-slider">
-              <input type="range" id="slider-volume" min="0" max="100" value="100">
+            <button id="ctrl-autoplay" class="btn-icon active" title="Toggle Autoplay (A)">
+              <span class="material-icons">play_circle_filled</span>
+            </button>
+
+            <div class="hover-flyout-container">
+              <button id="ctrl-speed" class="btn-icon-small" title="Playback Speed (< / >)">
+                <span class="material-icons">speed</span>
+                <span id="label-speed" class="badge-speed">1x</span>
+              </button>
+              <div class="flyout-slider">
+                <input type="range" id="slider-speed" min="0.25" max="4" step="0.25" value="1">
+              </div>
+            </div>
+
+            <div class="hover-flyout-container">
+              <button id="ctrl-mute" class="btn-icon-small" title="Mute/Unmute (M)">
+                <span id="icon-volume" class="material-icons">volume_up</span>
+              </button>
+              <div class="flyout-slider">
+                <input type="range" id="slider-volume" min="0" max="100" value="100">
+              </div>
             </div>
           </div>
         </div>
